@@ -12,7 +12,7 @@ C 语言 & AI 课程笔记仓库。每天一个临时分支，事后合并到 `d
   - [速查清单 (Checklist)](./archive/python/.docs/checklist.md)
   - [详细讲义 (Reference)](./archive/python/.docs/reference.md)
 - **Java**
-  - [速查清单 (HTML)](./archive/java/.docs/checklist.html)
+  - [速查清单 (HTML)](https://g-o-s-h.github.io/BPU26/archive/java/docs/checklist.html)
 - **C++**
   - [课程大纲与介绍](./archive/cpp/.docs/课程介绍.md)
 
