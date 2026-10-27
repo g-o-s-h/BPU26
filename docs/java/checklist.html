@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java 复习知识树</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2323272f'/%3E%3Ctext x='16' y='22' font-size='16' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%23f89820'%3EJ%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f6f5f1;
+  --panel:#ffffff;
+  --ink:#23262b;
+  --ink-soft:#5b616b;
+  --line:#e5e2d9;
+  --accent:#e06c00;
+  --accent-soft:#fff1e4;
+  --java-blue:#3f6d86;
+  --sidebar:#23272f;
+  --sidebar-ink:#c9d1dc;
+  --sidebar-dim:#7d8794;
+  --sidebar-line:#343a45;
+  --ok:#1f7a4d;
+  --ok-soft:#e5f4ec;
+  --warn:#b3541e;
+  --code-bg:#f3f1ec;
+  --shadow:0 8px 30px rgba(35,39,47,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:14px;color:var(--ink);border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 10px;outline:none;width:100%}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(224,108,0,.15)}
+textarea{resize:vertical;line-height:1.5}
+
+/* ===== Topbar ===== */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;padding:0 18px;height:58px;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;letter-spacing:.3px;white-space:nowrap}
+.brand .mark{width:30px;height:30px;border-radius:8px;background:var(--sidebar);color:var(--accent);display:grid;place-items:center;font-weight:900;font-size:15px}
+.brand small{display:block;font-weight:400;font-size:11px;color:var(--ink-soft);letter-spacing:.5px}
+.topbar .search{flex:1;max-width:560px;position:relative;margin:0 6px}
+.topbar .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--ink-soft);pointer-events:none}
+.topbar .search input{padding-left:34px;background:var(--bg)}
+.actions{display:flex;gap:8px;margin-left:auto;flex-wrap:nowrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid var(--line);background:#fff;transition:.15s;white-space:nowrap}
+.btn svg{width:15px;height:15px;stroke:currentColor}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.05);color:#fff}
+.btn.ghost{color:var(--ink-soft);border-color:transparent}
+.btn.ghost:hover{color:var(--ink);border-color:var(--line)}
+.menu-toggle{display:none}
+
+/* ===== Layout ===== */
+.layout{display:flex;height:calc(100vh - 58px);position:relative}
+/* Sidebar tree */
+.sidebar{width:300px;min-width:300px;background:var(--sidebar);color:var(--sidebar-ink);overflow-y:auto;padding:14px 10px;flex:none}
+.sidebar::-webkit-scrollbar{width:8px}
+.sidebar::-webkit-scrollbar-thumb{background:#3a414d;border-radius:4px}
+.side-head{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 12px;font-size:12px;color:var(--sidebar-dim);font-weight:600;letter-spacing:.5px}
+.side-head .count{opacity:.8}
+.tree{font-size:13.5px}
+.tnode{user-select:none}
+.trow{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:7px;cursor:pointer;color:var(--sidebar-ink)}
+.trow:hover{background:#2d323c}
+.trow.active{background:var(--accent);color:#fff}
+.trow .caret{width:14px;height:14px;flex:none;display:grid;place-items:center;transition:.15s;color:var(--sidebar-dim)}
+.trow.active .caret{color:rgba(255,255,255,.8)}
+.trow .caret.open{transform:rotate(90deg)}
+.trow .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow .dot{width:6px;height:6px;border-radius:50%;flex:none}
+.trow .dot.user{background:var(--java-blue)}
+.trow .dot.status{background:transparent}
+.trow.s-mastered .name{text-decoration:line-through;opacity:.55}
+.trow.s-reviewed .name{opacity:.75}
+.tchildren{margin-left:14px;border-left:1px dashed var(--sidebar-line)}
+.tnode.collapsed>.tchildren{display:none}
+/* Search results in sidebar */
+.search-results{padding:4px 2px}
+.sr-item{padding:8px 10px;border-radius:7px;cursor:pointer;display:block;width:100%;text-align:left;color:var(--sidebar-ink)}
+.sr-item:hover{background:#2d323c}
+.sr-item .sr-path{display:block;font-size:11px;color:var(--sidebar-dim);margin-bottom:2px}
+.sr-item .sr-title{font-size:13px}
+.sr-item.active{background:var(--accent);color:#fff}
+.sr-item.active .sr-path{color:rgba(255,255,255,.8)}
+.sr-item .hl{color:var(--accent);font-weight:700}
+.sr-item.active .hl{color:#ffe3c8}
+.empty-tip{padding:18px 10px;color:var(--sidebar-dim);font-size:12.5px;text-align:center}
+
+/* Content panel */
+.main{flex:1;overflow-y:auto;padding:30px 40px 60px}
+.crumbs{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;flex-wrap:wrap}
+.crumbs button{color:var(--java-blue);font-size:12.5px}
+.crumbs .sep{color:var(--line)}
+.paper{max-width:880px;margin:0 auto}
+.node-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+.node-head h1{font-size:26px;font-weight:800;letter-spacing:.3px;line-height:1.3}
+.node-head .meta{margin-top:8px;display:flex;gap:10px;flex-wrap:wrap}
+.badge{font-size:11.5px;padding:3px 9px;border-radius:20px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.badge.user{background:var(--java-blue);color:#fff}
+.badge.leaf{background:#e9e6df;color:var(--ink-soft)}
+.status-bar{display:flex;gap:8px;margin-left:auto;flex:none}
+.stat-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:6px 11px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);font-weight:600;transition:.15s}
+.stat-btn svg{width:14px;height:14px}
+.stat-btn:hover{border-color:var(--ink-soft)}
+.stat-btn.on-review{background:var(--java-blue);color:#fff;border-color:var(--java-blue)}
+.stat-btn.on-master{background:var(--ok);color:#fff;border-color:var(--ok)}
+
+.content{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px 28px;box-shadow:var(--shadow)}
+.content .lead{font-size:15px;color:var(--ink-soft);margin-bottom:6px}
+.block{margin:0}
+.line{white-space:pre-wrap;word-break:break-word}
+.line.code{font-family:Consolas,"SF Mono",ui-monospace,Menlo,monospace;font-size:13px;background:var(--code-bg);border-left:3px solid var(--accent);padding:2px 10px;margin:2px 0;color:#2b3440;display:block}
+.line.note{display:block;padding:1px 0}
+.line.empty{height:8px}
+.sec-title{display:block;font-weight:700;margin:14px 0 6px;color:var(--ink);font-size:15px}
+
+.node-empty{color:var(--ink-soft);text-align:center;padding:40px;font-size:14px}
+.node-children{margin-top:26px}
+.node-children .label{font-size:13px;color:var(--ink-soft);margin-bottom:12px;font-weight:600}
+.child-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.child-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;cursor:pointer;transition:.15s;text-align:left}
+.child-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 18px rgba(35,39,47,.08)}
+.child-card .c-name{font-weight:700;font-size:14px;margin-bottom:4px;color:var(--ink)}
+.child-card .c-desc{font-size:12px;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.child-card.has-content::after{content:"· 已收录";color:var(--java-blue);font-size:11px;font-weight:600}
+
+/* Home / overview */
+.overview{padding-top:8px}
+.overview h1{font-size:30px;font-weight:900;letter-spacing:.5px;margin-bottom:6px}
+.overview .sub{color:var(--ink-soft);margin-bottom:28px;max-width:620px}
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.ov-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;transition:.15s;box-shadow:0 4px 16px rgba(35,39,47,.05)}
+.ov-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+.ov-card .ov-no{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.5px;margin-bottom:8px}
+.ov-card .ov-name{font-size:17px;font-weight:800;margin-bottom:6px}
+.ov-card .ov-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.5}
+.ov-card .ov-count{margin-top:12px;font-size:11.5px;color:var(--ink-soft)}
+.stat-strip{display:flex;gap:16px;margin:0 0 30px;flex-wrap:wrap}
+.stat-chip{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 18px;font-size:13px;color:var(--ink-soft)}
+.stat-chip b{color:var(--ink);font-size:18px;margin-right:6px}
+
+/* ===== Modal ===== */
+.overlay{position:fixed;inset:0;background:rgba(20,22,26,.5);backdrop-filter:blur(2px);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 16px;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:var(--panel);border-radius:16px;width:100%;max-width:680px;box-shadow:var(--shadow);padding:24px 26px;margin:auto 0}
+.modal h2{font-size:19px;font-weight:800;margin-bottom:4px}
+.modal .m-sub{color:var(--ink-soft);font-size:13px;margin-bottom:20px}
+.m-field{margin-bottom:16px}
+.m-field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+.m-field .hint{font-size:12px;color:var(--ink-soft);margin-top:5px}
+.m-row{display:flex;gap:10px}
+.m-row .m-field{flex:1}
+.m-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.modal .close{position:absolute;top:14px;right:16px;width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--ink-soft)}
+.modal .close:hover{background:var(--bg);color:var(--ink)}
+.modal{position:relative}
+.online-banner{display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:var(--ok-soft);color:var(--ok);font-size:13px;margin-bottom:16px}
+.online-banner.on{display:flex}
+.online-banner .ping{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
+.ai-status{padding:12px 14px;border-radius:10px;background:var(--bg);font-size:13px;color:var(--ink-soft);margin-bottom:14px;display:none}
+.ai-status.show{display:block}
+.ai-status.error{background:#fdeee6;color:var(--warn)}
+.preview-box{max-height:300px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff}
+.preview-box .p-item{padding:8px 10px;border-bottom:1px dashed var(--line)}
+.preview-box .p-item:last-child{border-bottom:none}
+.preview-box .p-title{font-weight:700;font-size:14px;margin-bottom:3px}
+.preview-box .p-parent{font-size:11.5px;color:var(--java-blue);margin-bottom:4px}
+.preview-box .p-body{font-size:12.5px;color:var(--ink-soft);white-space:pre-wrap;max-height:80px;overflow:hidden}
+.seg-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:12.5px;font-weight:600}
+.seg-btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg .seg-btn{border:none;border-radius:0}
+.tab-bar{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:10px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink-soft)}
+.tab.on{background:var(--accent-soft);color:var(--accent)}
+.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;font-size:13.5px;box-shadow:var(--shadow);z-index:200;opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+code{font-family:Consolas,ui-monospace,monospace}
+.help-list li{margin:8px 0;padding-left:4px}
+.mono{font-family:Consolas,ui-monospace,monospace;background:var(--bg);padding:1px 6px;border-radius:5px;font-size:12.5px}
+
+/* ===== Responsive ===== */
+@media (max-width:820px){
+  .topbar{padding:0 12px;gap:8px}
+  .brand small{display:none}
+  .actions .btn .lbl{display:none}
+  .menu-toggle{display:inline-flex}
+  .layout{height:calc(100vh - 58px)}
+  .sidebar{position:fixed;left:0;top:58px;bottom:0;width:78%;max-width:340px;transform:translateX(-105%);transition:.25s;z-index:60;box-shadow:var(--shadow)}
+  .sidebar.open{transform:translateX(0)}
+  .main{padding:22px 16px 50px}
+  .content{padding:20px 16px}
+  .node-head{flex-wrap:wrap}
+  .status-bar{width:100%;margin-left:0}
+  .overlay{padding:16px 12px}
+  .modal{padding:20px 18px}
+}
+@media (max-width:480px){
+  body{font-size:14.5px}
+  .node-head h1{font-size:21px}
+  .overview h1{font-size:24px}
+  .stat-strip{gap:10px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===== Topbar ===== -->
+<header class="topbar">
+  <button class="btn ghost menu-toggle" id="menuBtn" aria-label="打开目录"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+  <div class="brand"><span class="mark">J</span><span>Java 复习知识树<small>离线可用 · 随学随记</small></span></div>
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="searchInput" type="text" placeholder="搜索知识点，如：BigInteger / 运算符 / 重载…" autocomplete="off">
+  </div>
+  <div class="actions">
+    <button class="btn primary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span class="lbl">添加新知识</span></button>
+    <button class="btn" id="aiBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3zM19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1-2.1-.9 2.1-.9L19 15z"/></svg><span class="lbl">智能整理</span></button>
+    <button class="btn ghost" id="importBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span class="lbl">导入</span></button>
+    <button class="btn ghost" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 15V3m0 0 4 4m-4-4-4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span class="lbl">导出</span></button>
+  </div>
+</header>
+
+<!-- ===== Layout ===== -->
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="side-head"><span>知识目录</span><span class="count" id="treeCount"></span></div>
+    <div id="tree"></div>
+  </aside>
+
+  <main class="main" id="main">
+    <div id="viewHome" class="paper overview"></div>
+    <div id="viewNode" class="paper hidden"></div>
+  </main>
+</div>
+
+<!-- ===== Modals ===== -->
+<div class="overlay" id="ovAdd">
+  <div class="modal">
+    <button class="close" data-close="ovAdd"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2>添加新知识</h2>
+    <p class="m-sub">手动录入一个知识点，保存后立即出现在知识树里（保存在本机浏览器）。</p>
+    <div class="m-field">
+      <label>所属位置</label>
+      <select id="addParent"></select>
+      <div class="hint">选择知识点挂在哪个分类下；选"根目录"则作为新的一级分类。</div>
+    </div>
+    <div class="m-field">
+      <label>知识点标题</label>
+      <input id="addTitle" type="text" placeholder="如：HashMap 的使用">
+    </div>
+    <div class="m-field">
+      <label>知识点内容</label>
+      <textarea id="addContent" rows="8" placeholder="把这一知识点的要点、代码示例、易错点写在这里。&#10;支持多行，看起来像代码的行会自动按代码样式显示。"></textarea>
+    </div>
+    <div class="m-actions">
+      <button class="btn ghost" data-close="ovAdd">取消</button>
+      <button class="btn primary" id="addSaveBtn">保存知识点</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovAI">
+  <div class="modal">
+    <button class="close" data-close="ovAI"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2>智能整理新知识</h2>
+    <p class="m-sub">粘贴你新学到的原始内容（一段话、几个要点、一段代码都行），让程序帮你整理成结构化知识点。</p>
+    <div class="online-banner" id="onlineBanner"><span class="ping"></span><span>当前已联网，可用 AI 接口自动整理</span></div>
+    <div class="tab-bar">
+      <button class="tab on" data-tab="local">本机整理（离线可用）</button>
+      <button class="tab" data-tab="online">AI 联网整理</button>
+    </div>
+    <div class="tabpane" id="pane-local">
+      <div class="m-field">
+        <label>粘贴原始笔记</label>
+        <textarea id="aiLocalText" rows="9" placeholder="每行或每段是一个要点。&#10;如果一行以「标题：」结尾，会把它作为小标题。&#10;示例：&#10;Scanner 是 Java 的输入类&#10;用法：Scanner s = new Scanner(System.in);&#10;s.nextInt() 读取整数&#10;s.nextLine() 读取一整行"></textarea>
+        <div class="hint">本机整理：按行/段落切分要点，提取首句作为标题，生成结构化的新知识点。完全离线，不联网。</div>
+      </div>
+      <div class="m-actions"><button class="btn primary" id="aiLocalBtn">本机整理并预览</button></div>
+    </div>
+    <div class="tabpane hidden" id="pane-online">
+      <div class="m-field">
+        <label>粘贴原始笔记</label>
+        <textarea id="aiOnlineText" rows="9" placeholder="粘贴一段较完整的新知识内容，由 AI 接口整理成结构化知识点。"></textarea>
+        <div class="hint">需要先在「设置」里配置一个 AI 接口地址（OpenAI 兼容格式）。未配置或离线时，会自动退回本机整理。</div>
+      </div>
+      <div class="m-actions"><button class="btn primary" id="aiOnlineBtn">调用 AI 整理</button></div>
+    </div>
+    <div class="ai-status" id="aiStatus"></div>
+    <div class="preview-box hidden" id="aiPreview">
+      <div style="font-size:12px;color:var(--ink-soft);font-weight:700;margin-bottom:6px">整理结果预览（可勾选保留）：</div>
+      <div id="aiPreviewList"></div>
+    </div>
+    <div class="m-actions">
+      <button class="btn ghost" data-close="ovAI">关闭</button>
+      <button class="btn primary hidden" id="aiConfirmBtn">把勾选的知识点加入知识树</button>
+      <button class="btn ghost" id="aiSettingsBtn">接口设置</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovImport">
+  <div class="modal">
+    <button class="close" data-close="ovImport"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2>导入整理好的知识点</h2>
+    <p class="m-sub">把「豆包」帮你整理的结构化文本粘贴进来，或粘贴备份 JSON，合并到本知识树。</p>
+    <div class="tab-bar">
+      <button class="tab on" data-tab="txt">结构化文本</button>
+      <button class="tab" data-tab="json">备份 JSON</button>
+    </div>
+    <div class="tabpane" id="imp-txt">
+      <div class="m-field">
+        <label>结构化文本格式</label>
+        <textarea id="impTxt" rows="10" spellcheck="false" placeholder="每条知识点用「---」分隔：&#10;&#10;# 分类标题（可省略）&#10;标题: 知识点标题&#10;正文第一行...&#10;正文第二行...&#10;---&#10;标题: 另一个知识点&#10;它的内容..."></textarea>
+        <div class="hint">格式：<span class="mono"># 所属分类</span>（可选）→ <span class="mono">标题: xxx</span> → 内容多行 → 下一条用 <span class="mono">---</span> 分隔。</div>
+      </div>
+    </div>
+    <div class="tabpane hidden" id="imp-json">
+      <div class="m-field">
+        <label>备份 JSON</label>
+        <textarea id="impJson" rows="10" spellcheck="false" placeholder="粘贴导出的完整 JSON 数据。"></textarea>
+        <div class="hint">用「导出」得到的 JSON 可直接粘回来，恢复全部笔记与复习进度。</div>
+      </div>
+    </div>
+    <div class="m-actions"><button class="btn primary" id="impBtn">导入并合并</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovSettings">
+  <div class="modal">
+    <button class="close" data-close="ovSettings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2>AI 接口设置</h2>
+    <p class="m-sub">配置 OpenAI 兼容的对话接口地址与密钥，用于联网自动整理。不配置也可正常使用（本机整理 + 手动添加）。</p>
+    <div class="m-field">
+      <label>接口地址（Chat Completions）</label>
+      <input id="setUrl" type="text" placeholder="如：https://api.openai.com/v1/chat/completions">
+    </div>
+    <div class="m-field">
+      <label>API Key</label>
+      <input id="setKey" type="password" placeholder="sk-...">
+    </div>
+    <div class="m-field">
+      <label>模型名</label>
+      <input id="setModel" type="text" placeholder="如：gpt-4o-mini">
+    </div>
+    <div class="m-actions"><button class="btn primary" id="setSaveBtn">保存设置</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 知识数据（由构建脚本注入） ===== */
+const BASE = {"title":"Java 复习知识树","root":[{"name":"Java 基础入门","children":[{"name":"语言特点与程序结构","content":"1. Java 对大小写敏感\n2. 关键字 class 的意思是\"类\"。Java 是面向对象的语言，所有代码必须位于类里面\n3. 编译后的源文件，得到相应的字节码文件，编译器为每个类型生成独立的字节码文件\n4. main 方法是 Java 程序的入口方法，格式固定：\n   public static void main(String[] args){...}\n5. 一个源文件可以包含多个类\n6. 每个语句必须以分号结束。回车不是语句结束的标志，所以一个语句可以跨多行\n\n注意事项：\n- 一定要注意缩进规范\n- 在写括号、引号时，一定要成对编写，然后再插入内容\n- 用记事本输入中文内容时，保存类型换成 (*.*)，编码换 ANSI"},{"name":"开发环境（DOS 命令）","content":"DOS（磁盘操作系统）\n1. cd 目录路径 —— 进入一个目录\n2. cd.. —— 进入父目录\n3. dir —— 查看本目录下的文件和子目录列表\n4. cls —— 清除屏幕命令\n5. 上下键 —— 翻看输入过的命令\n6. Tab 键 —— 自动补齐命令\n\n常用 Java 开发工具：IDEA\n常用文本编辑器：Notepad++、Sublime、Ediplus"},{"name":"二进制与进制转换","content":"二进制：逢2进1，从右往左依次 1 2 4 8.... 以此类推，往后一位数字翻倍。\n二进制中 1 代表这个数字成立，0 代表不进入计算。\n如数字 4 用 100 表示，代表 4+0+0=4。\n\n十进制转二进制：采用除 2 取余，逆序排列的方法\n二进制转十进制：权相加法\n例如 1011010 = 1×2⁶+0×2⁵+1×2⁴+1×2³+0×2²+1×2¹+0×2⁰ = 64+16+8+2 = 90\n2 的次方数量根据位数决定"},{"name":"注释","content":"注释不会出现在字节码文件中，即 Java 编译器编译时会跳过注释语句。\nJava 中根据注释功能不同，主要分为单行注释、多行注释和文档注释。\n\n- 单行注释：使用 // 开头\n- 多行注释：以 /* 开头以 */ 结尾（注意：多行注释不能嵌套使用）\n- 文档注释：以 /** 开头以 */ 结尾，注释中包含说明性文字及一些 javaDoc 标签"},{"name":"标识符与命名规范","content":"标识符是用来给变量、类、方法以及包进行命名的。四大规则：\n1、必须以字母、下划线 \"_\"、美元符 $ 开头\n2、其他部分可以是字母、下划线、美元符 $ 和数字的任意组合\n3、大小写敏感，且长度无限制\n4、不可以是 java 关键字\n\n使用规范：\n- 类名：每个单词首字母大写，如 Man、GoodMan\n- 方法和变量：第一个单词小写，从第二个单词开始首字母大写（驼峰原则），如 eat()、eatFood()\n- Java 采用 Unicode 字符集，字母含义不仅包括英文还包括汉字等；但不建议用汉字定义标识符\n- 结尾一定要有分号"},{"name":"IDEA 使用技巧","content":"- Ctrl+z 是返回上一步\n- sout 是 System.out.println. 的缩写\n- 文件 out 里是字节码\n- 快速注释：选中后点 ctrl+shift+/"}]},{"name":"变量与常量","children":[{"name":"变量的本质与分类","content":"变量本质（固定空间）= 停车位\n变量名（通过名字操作空间）= 车位编号\n数据（变化的量）= 车\n\n1、变量本质上代表一个\"可操纵的存储空间\"，空间位置确定，但里面放什么值不确定\n2、可通过变量名访问\"对应的存储空间\"，从而操纵存储的值\n3、Java 是一种强类型语言，每个变量都必须声明其数据类型。数据类型决定变量占存储空间的大小。如 int a=3; 表示 a 变量空间大小为 4 字节\n\n使用变量之前必须初始化（初始化类似于赋值）。\n\n变量的分类：\n1. 方法变量（局部变量）：声明在方法或语句块内部，从属于方法/语句块；生命周期从声明位置开始，直到方法或语句块执行完毕就消失\n2. 成员变量（实例变量）：声明在类内方法外，从属于对象；对象创建它跟着创建，对象消失它跟着消失\n3. 静态变量（类变量）：类内部 static 修饰，从属于类；类被加载它就有效，类被卸载它就消失"},{"name":"静态的 3 个关键特点","content":"1. 属于类，不属于单个对象\n2. 不用 new 就能用。全类共享一份，大家用的都是同一个\n3. 可以直接运行 / 直接访问"},{"name":"常量 Constant","content":"一般将 1、2、3、a、b、true、false、helloWorld 称为字符常量；\n使用 final 修饰的 PI 等称为符号常量。\n\n命名规范：\n- 所有变量、方法、类名：见名知义\n- 类成员变量：首字母小写 + 驼峰原则，如 monthSalary\n- 局部变量：首字母小写 + 驼峰原则\n- 常量：大写字母 + 下划线，如 MAX_VALUE\n- 类名：首字母大写 + 驼峰原则，如 Man、GoodMan\n- 方法名：首字母小写 + 驼峰原则，如 run()、runKun()"}]},{"name":"数据类型","children":[{"name":"基本数据类型 - 整型","content":"数值型——整数类型：\n- byte（1字节）表数范围 -128~127\n  计算方法：-2 的 (bit-1) 次方 到 2 的 (bit-1) 次方 -1\n- short（2字节）\n- int（4字节）\n- long（8字节）\n1 字节 = 8 bit"},{"name":"浮点型 float / double","content":"浮点型（用于表示无理数，但数值并不精确，无法用于比较）：\n- float（4字节）被称为单精度类型，尾数可精确到 7 位有效数字，表数范围 -3.403E38 ~ 3.403E38\n- double（8字节）双精度类型，比较常用的类型，范围 -1.798E308 ~ 1.798E308（E 是乘以 10 的几次方）\n\n注意：一般直接打 float 会出错，因为电脑会优先用 double，所以用 float 时要在数字后加 F 或 f"},{"name":"字符型与布尔型","content":"字符型：char（只能存单个字符，存的字符要用单引号包裹）\n- String 能存多个字符，存的字符要用双引号包裹\n- (java 中字符串不是基本数据类型，而是一个类)\n- char 代表单个字符，str 代表一串字符\n\n布尔型：boolean\n1. boolean 类型有两个常量值，true 和 false\n2. 在内存中占有一个字节或四个字节，不可以使用 0 或非 0 的整数代替 true 和 false（这点和 C 语言不同）"},{"name":"引用数据类型","content":"引用数据类型——类 class\n引用数据类型——接口 interface\n引用数据类型——数组 array"},{"name":"字面量（常量）四种表现形式","content":"1. 十进制整数，如：99，-500，0\n2. 八进制整数，要求以 0 开头，如：015\n3. 十六进制数，要求 0x 或 0X 开头，如 0x15\n4. 二进制数，要求 0b 或 0B 开头，如 0b01110011\n\n在定义中加入 L 表示把整型常量定义为 long 类型\n一个 = 是赋值，两个 == 是比较"},{"name":"字符集","content":"- ASCII（英文、数字、特殊字符、控制符）\n- BIG5（台湾繁体中文）\n- GB1803（中文）\n- Unicode（国际通用字符集）\n- ISO8859-1（西欧字符集）"},{"name":"转义字符","content":"转义字符    名称    作用\n\\n      换行符    光标移到下一行开头（最常用）\n\\r      回车符    光标移到当前行开头（会覆盖前面内容）\n\\t      制表符    光标跳到下一个制表位，用来对齐文本\n空格      空格      占一个字符位置，光标向后移动一格\n\\b      退格\n\\\"      双引号\n\\'      单引号\n\\\\      反斜杠"}]},{"name":"运算符","children":[{"name":"算术运算符","content":"二元运算符：+、-、*、/（左边分子右边分母）、%\n整数运算：\n- 如果两个操作数有一个为 long，则结果也为 long\n- 没有 long 时，结果为 int。即使操作数全为 short、byte，结果也是 int\n\n浮点运算：\n- 如果两个操作数有一个为 double，则结果为 double\n- 只有两个操作数都是 float，结果才为 float\n- 浮点运算时数字后面要加入小数点，不然数型变成 double 或 float 也会按照 int 得出结果\n\n取余（%）：\n- 操作数可以为浮点数，一般使用整数，结果是\"余数\"，余数符号和左边操作数相同\n- 如：7%3=1，-7%3=-1，7%-3=1\n\n一元运算符：++、--\n例：g++ 相当于 g=g+1; g-- 相当于 g=g-1\n\n两个整数相除，用 int 会直接保留结果的整数部分，没有四舍五入；想要小数点可以用 double"},{"name":"赋值与关系运算符","content":"注意事项：\n- = 是赋值运算符，而真正判断两个操作数是否相等的运算符是 ==\n- ==、!= 是所有（基本和引用）数据类型都可以使用\n- >、>=、<、<= 仅针对数值类型（byte/short/int/long、float/double）\n- 关系运算符用来进行比较运算，关系运算的结果是 true/false，要用 boolean 接收"},{"name":"逻辑运算符","content":"- & 与（逻辑与）：不管前面对不对，后面必须全部算一遍\n- && 短路与：只要有一个为 false，则结果为 false；前面错了，后面直接不看\n- | 或\n- || 短路或：只要有一个为 true，则 true\n- ！非：取反\n- ^ 异或：相同为 false，不同为 true"},{"name":"位运算符","content":"- & 按位与：计算方法，二进制同位相乘\n- | 按位或\n- ^ 按位异或\n- ~ 取反：位运算中的取反比较特殊，取反后会变为负数；计算公式 ~x = -(x + 1)\n- >> 右移运算符：右移 1 位相当于乘 2（移位运算适用于二进制）\n- << 左移运算符：左移一位相当于除以二取商\n- >>> 无符号右移"},{"name":"条件运算符（三元）","content":"条件运算符：? :\nx ? y : z —— 若 x 为 true，则返回 y；若 x 为 false，则返回 z\n条件运算符相当于迷你的 if 公式，可用于在嵌套循环中加入小型判断，可以加入 sout 里"},{"name":"字符串连接符","content":"字符串连接符：+（与正常加号的区别是不直接进行加法运算，而是直接连接数字）\n例如：\"3\"+4=34\n\n\"+\" 运算符两侧的操作数中只要有一个是字符串（String）类型，系统会自动将另一个操作数转换为字符串再进行连接，得出结果是字符串而不是数字。\n条件是 String，不是 char；若是 char，则仍然是加法。\n技巧：通过加空字符串，让整个 + 都变成连接符。"},{"name":"运算符优先级","content":"优先级  运算符  类\n1     ()        括号运算符\n2     ！、+（正号）、-（负号）  一元运算符\n2     ~          位逻辑运算符\n2     ++、--     递增与递减运算符\n3     *、/、%    算术运算符\n4     +、-       算术运算符\n5     <<、>>     位左移、位右移运算符\n6     >、>=、<、<=  关系运算符\n7     ==、!=     关系运算符\n8     &          位运算符、逻辑运算符\n9     ^          位运算符、逻辑运算符\n10    |          位运算符、逻辑运算符\n11    &&         逻辑运算符\n12    ?:         条件运算\n13    =、+=、-=   赋值\n\n总结：\n1、括号运算符优先级最高\n2、算术运算符优先级高于关系运算符\n3、关系运算符高于位运算和逻辑运算符\n\n重点：\n- 逻辑非 > 逻辑与 > 逻辑或\n- a||b&&c 的运算结果是 a||(b&&c)，而不是 (a||b)&&c\n- 不用刻意记这些优先级，表达式里面优先用小括号来组织"}]},{"name":"数据类型转换","children":[{"name":"自动类型转换","content":"自动类型转换：容量小的数据类型可以自动转换为容量大的数据类型。\n\n转换关系：\nbyte——>short——>int——>long\nfloat——>double\nchar 可转 int，int 可转 double\nbyte 可转 short 可转 int 可转 long\nint 可转 float，long 可转 float，long 可转 double\n（这一行在转换过程中可能会有精度损失）"},{"name":"强制类型转换","content":"强制类型转换，又称为造型（cast），用于强制转换数值的类型，可能损失精度。\n强制转型，如果超过了表数范围，则会转成一个完全不同的值。"},{"name":"常见错误和问题","content":"1、操作比较大的数时，要留意是否溢出，尤其是整数操作时\n2、L 和 I 的问题：\n   （1）不要命名名字为 I 的变量，字母容易和数字 1 混淆\n   （2）long 类型使用大写 L，不要用小写 l"}]},{"name":"输入输出 Scanner","children":[{"name":"键盘输入 Scanner","content":"Scanner 让程序和用户通过键盘交互。\n在类之外输入：\nimport java.util.Scanner;\n\nScanner 类定义在 java.util 包中。当使用的类不是定义在基本 java.lang 包中时，一定要使用 import 指示字将相应的包加载进来。\n\n读取方式：\n数型 数据名 = next数型（）；\n- nextLine 是读取一整行输入\n- next 是读取一个单词\n- nextInt 是读取一个整数\n- nextDouble 是读取浮点数\n\n示例（年薪计算器）：\nScanner s = new Scanner(System.in);\nString uname = s.nextLine();       // 用户名\nint age = s.nextInt();             // 年龄\ndouble monthSalary = s.nextDouble(); // 月薪\nSystem.out.println(\"年薪：\" + (monthSalary * 12));"},{"name":"文件读取","content":"想要对文件进行读取，就要构造一个用 file 对象构造一个 Scanner 对象：\nScanner in = new Scanner(Paths.get(\"文件名\"));\n作用：打开一个文本文件，准备读取里面的文字\n\n如果文件名中包含反斜杠符号，就要构造一个 PrintWriter 对象，在构造器中只需要提供文件名。\n如果文件不存在，会创建该文件，可以像输出到 system.out 一样使用 print、println 以及 printf 命令。"}]},{"name":"控制语句","children":[{"name":"三大结构概述","content":"控制语句：把语句组合成能完成一定功能的小逻辑模块。它分为三类：顺序、选择和循环。\n学会控制语句，是真正的跨入编程界。\n\n1. 顺序结构：代表\"先执行 a 再执行 b\"的逻辑\n2. 条件判断结构（选择结构）：代表\"如果...则...\"的逻辑\n3. 循环结构：代表\"如果...则重复执行\"的逻辑"},{"name":"if 条件判断","content":"语法结构：\nif（布尔表达式）{\n  语句块\n}\n1. 如果 if 语句不写 {}，则只能作用于后面的第一条语句\n2. 强烈建议，任何时候都写上 {}，即使里面只有一句话"},{"name":"switch 分支","content":"1. switch 会根据表达式的值从相匹配的 case 标签处开始执行，一直执行到 break 处或 switch 的末尾。如果表达式的值与任一 case 值不匹配，则进入 default 语句\n2. switch 中表达式的值，是 int（byte、short、char 也可，long 不行）、枚举、字符串\n\n效果和 if-else 差不多，区别是遇到多值时结构会比较清晰"},{"name":"while 循环","content":"循环结构分为两大类：当型（while、for）和直到型（do-while）。\n当型：当布尔表达式条件为 true 时，反复执行某语句；为 false 时才停止。\n\n语法：\nwhile（布尔表达式）{\n  循环体；\n}\n1. 循环刚开始时，会计算一次\"布尔表达式\"的值，若条件为真，执行循环体；对于每一次额外的循环，都会在开始前重新计算一次\n2. 语句中应有使循环趋向于结束的语句，否则会出现无限循环——\"死\"循环"},{"name":"for 循环","content":"语法：\nfor（初始表达式；布尔表达式；迭代因子）{\n  循环体；\n}\n- 初始化部分：设置循环变量的初值\n- 条件判断部分：布尔表达式\n- 迭代因子：控制循环变量的增减\n- for 循环在执行条件判定后，先执行循环体部分，再执行步进\n\n执行顺序：for(①初始化; ②判断条件; ④迭代更新){ ③循环体代码 }\n注意：for 循环里的变量只能在 for 循环里使用\n\n嵌套 for 循环：外层循环一次，内层跑完一轮\n\nprintln 与 print 的区别：println 是打印+换行，print 是不换行"},{"name":"do-while 循环","content":"语法：\ndo{\n  循环体；\n}while（布尔表达式）；\ndo-while 循环会先执行循环体，然后再判断布尔表达式的值；若条件为真，执行循环体，当条件为假时结束循环。\ndo-while 循环体至少执行一次。\n\n技巧记录：\n如果想要每行显示 n 个数字：\nint 变量名 = 0;\n变量名++;\nif (变量名 % 5 == 0) { System.out.println(); }"},{"name":"嵌套循环","content":"循环语句内部，再多写一个或多个循环，称为嵌套循环。一般工作中多见的就是两层。"},{"name":"break / continue / return","content":"break 和 continue 语句：\n1. break 用于强行退出整个循环\n2. continue 用于结束本次循环，进行下一次\n\n带标签的 continue 语句：\n- 标签是指后面跟一个冒号的标识符，例如：\"label\"。对 java 来说唯一用到标签的地方就是嵌套循环跳转\n- outer 跳转可以用于控制循环间的跳转\n\n带标签 break 循环语句，使用时要提前在循环处定义标签，可以用于跳出嵌套循环。\n\n示例（打印 101-150 之间的所有质数）：\npublic class Test18 {\n    public static void main(String args[ ]) {\n        outer: for (int i = 101; i < 150; i++) {\n            for (int j = 2; j < i / 2; j++) {\n                if (i % j == 0) {\n                    continue outer; //符合某条件，跳到外部循环继续\n                }\n            }\n            System.out.print(i + \" \");\n        }\n    }\n}\n\nreturn 的核心作用：\n1. 结束当前方法的执行\n2. 给调用者返回一个结果（如果方法不是 void 类型）\n3. 在 main 方法里，它的作用就是直接终止整个程序"}]},{"name":"方法","children":[{"name":"方法概述与声明","content":"方法：一段用来完成特定功能的代码片段，类似于其他语言的函数。\n方法用于定义该类或该类的实例的行为特征和功能实现。\n\n- 面向过程中，函数是基本单位，整个程序由一个个函数调用组成\n- 面向对象中，整个程序的基本单位是类，方法是从属于类和对象的\n\n方法声明格式：\n[修饰符1 修饰符2 ...] 返回值类型 方法名(形式参数列表){\n  Java语句; ... ... ...\n}"},{"name":"方法的调用","content":"方法的调用方式：\n- 普通方法：对象名.方法名(实参列表)\n- 静态方法：类名.方法名(实参列表)\n\n示例（求和方法）：\npublic static int sum(int a, int b) { return a + b; }\npublic static void main(String[] args) { int he = sum(3, 4); System.out.println(he); }\n\n调用流程：main 调用方法 → 把参数数值传给 sum（方法名）→ sum 自己算 → return 把结果数值递出来 → 回到 main → main 用自己的变量接住数值\n\nint[] 作为返回值类型：代表方法执行完毕后必须返回一个 int 类型的数组（两数之和题目固定返回两个下标组成的数组，例：return new int[]{0,1};）"},{"name":"形参实参与返回值","content":"- 形式参数：在方法声明时用于接收外界传入的数据（方法定义时）\n- 实参：调用方法时实际传给方法的数据（方法调用时）\n- 返回值：执行完毕后，返还给调用它的环境的数据\n- 返回值类型：事先约定的返回值的数据类型，如无返回值，则为 void"},{"name":"方法重载 overload","content":"重载：一个类中可以定义多个名称相同，但参数不同的方法。\n新手雷区：重载的方法，其实是完全不同的方法，只是名称相同而已。\n\n构成方法重载的条件：\n1. 形参类型、形参个数、形参顺序不同\n2. 只有返回值不同不构成方法的重载\n3. 只有形参的名称不同，不构成方法的重载\n   如：int a(String str){} 与 int a(String s){} 不构成方法重载"},{"name":"递归结构","content":"递归是一种很常见的算法思路，在很多算法中都会用到，比如：深度优先搜索等。\n递归的基本思想是\"自己调用自己\"。\n\n递归结构包括两个部分：\n- 递归头：解决\"什么时候不调用自身方法\"。如果没有头，将陷入死循环，也就是递归的结束条件\n- 递归体：解决\"什么时候需要调用自身方法\"\n\n递归的缺陷：\n算法简单是递归的优点之一。但是递归调用会占用大量系统堆栈，内存耗用多；在递归调用层次多时速度要比循环慢得多，所以使用递归时要谨慎。"},{"name":"语句块","content":"语句块（复合语句）。语句块中定义的变量只能用于自己，外部不能使用。\n语句块可以使用外部的变量，而外部不能使用语句块的变量。"}]},{"name":"面向对象","children":[{"name":"面向对象思想","content":"面向对象编程 (Object Oriented Programming)\n面向对象：我们在现实生活中，思考问题、发现问题、处理问题，往往都会用\"表格\"作为工具。\"表格思维\"就是一种典型的面向对象思维。\n\n面向过程 vs 面向对象：\n- 面向过程适合简单、不需要协作的事务，重点关注如何执行（C 语言是典型面向过程）\n- 面向对象适合复杂、需要协作的事务，更契合人的思维模式（Java 是典型面向对象）\n- 面向过程是一种\"执行者思维\"，面向对象是一种\"设计者思维\"\n- 面向对象离不开面向过程：宏观上通过面向对象把握整体设计，微观上执行和处理数据仍然是面向过程\n\n设计思路：先从问题中找名词，确立哪些名词可以作为类，再根据问题需求确定类的属性和方法，确定类之间的关系。"},{"name":"对象和类","content":"类可以看做是一个模板，或者是图纸，系统根据类的定义来造出对象。我们要造一个汽车，类就是这个图纸，规定了汽车的详细信息，然后根据图纸将汽车造出来。\n类：class。对象：Object、instance（实例）。以后说\"某个类的对象\"、\"某个类的实例\"是一个意思。"},{"name":"属性","content":"属性用于定义该类或该类对象包含的数据或者说静态特征。属性作用范围是整个类体。"},{"name":"构造方法（构造器）","content":"构造方法（构造器 constructor）创造对象的四步：\n1. 分配对象空间，并将对象变量初始化为零或空\n2. 执行属性值的显性初始化\n3. 执行构造方法\n4. 返回对象的地址给相关变量\n\n声明格式：[修饰符] 类名（形参列表）{...}\n\n构造器的四个要点：\n1. 构造器通过 new 关键字调用\n2. 构造器虽然有返回值，但是不能定义返回值类型（返回值的类型肯定是本类），不能在构造器里使用 return 返回某个值\n3. 如果我们没有定义构造器，则编译器会自动定义一个无参的构造方法\n4. 如果已定义构造器，则编译器不会自动添加"},{"name":"访问修饰符","content":"四种访问修饰符：\n1. public 公共：任何地方都能访问\n   public String name = \"张三\"; // 别的类中：new Demo().name 正常访问\n2. protected 受保护：本类、同包、子类可用\n   protected int age = 18;\n3. 默认修饰符（啥都不写）：只能同一个包内访问\n   String addr = \"北京\";\n4. private 私有：只能当前类内部使用（最安全）\n   private double money = 1000; // main 同类里可以使用，外部类访问报错"}]},{"name":"数组","children":[{"name":"数组声明与初始化","content":"public class {\n  public static void main(String[] args) {\n    // 声明数组并且分配空间\n    int[] arr = new int[3];\n    // 先声明，然后再分配空间\n    int[] arr2;\n    arr2 = new int[3];\n    // 声明并赋值\n    int[] arr3 = new int[]{1,2,4,6};\n    // 简写\n    int[] arr4 = {1,2,4,6};\n  }\n}\n\n数组长度：array.length;\n遍历数组：就是将数组中的数据一个个取出来\nfor(int i=0;i<a.length;i++){ System.out.println(a[i]); }\n\n拓展：多维数组。即数组内的元素还是数组。例：int[][] 变量名 = new int[][]{...}"},{"name":"静态初始化与匿名数组","content":"静态初始化（简化写法）：\n创建数组的同时直接填入元素值，不用手动写数组长度，java 会根据大括号里的元素数量自动确定数组长度：\nint[] smallprimes = {1,3,5,7};\n\n匿名数组：\n没有专属变量的数组，用 new 类型[]{元素} 的格式临时生成的一个数组对象，通常用来给已有的数组变量重新赋值：\nsmallprimes = new int[]{1,2,3,4,5};"},{"name":"常用方法","content":"打印数组中的每个数：Arrays.toString\n\n数组排序：想要对数值型数组进行排序，可以使用 Array 类中的 sort 方法\nArray.sort();   // 只能用于升序\n\n截取一段数组：Array.copyOfRange(arr, start, end)\n例：int[] newArr = Arrays.copyOfRange(arr,1,4); // 下标1、2、3 = [20,30,40]\nstart 起始下标，end 结束下标（不含）\n\n数组查找：binarySearch()\n例：int index = Array.binarySearch(arr, 5); // 返回下标\n注意：无序数组不能使用，会报错\n\n把数组都赋值为一个元素：Arrays.fill\n例：int[] arr = new int[5]; Arrays.fill(arr,8); // 数组全部变成 [8,8,8,8,8]\n\n快速打印二维数组：System.out.println(Array.deepToString(a));\n输出格式为 [[1,2,3],[4,5,6]]"},{"name":"多维数组","content":"多维数组记录方法：\nint[][] table = {\n  {1, 2, 3},\n  {4, 5, 6}\n};\n即数组内的元素还是数组。"}]},{"name":"字符串","children":[{"name":"StringBuilder 构造","content":"四种构造方法（创建 / 构建对象）：\n1. 空参构造（默认容量 16）\n   StringBuilder a = new StringBuilder();\n   // 默认缓冲区长度 16，存满自动扩容\n2. 指定初始容量（推荐预知长度时使用，减少扩容）\n   StringBuilder a = new StringBuilder(50);  // 预先开辟 50 个字符空间\n3. 传入字符串初始化\n   StringBuilder a = new StringBuilder(\"abc\");\n   // 底层容量 = 字符串长度 + 16\n4. 传入字符序列\n   StringBuilder a = new StringBuilder(new StringBuffer(\"123\"));"},{"name":"charAt()","content":"格式：字符串.charAt(int 下标值)\n作用：根据下标编号，取出字符串中单个字符\n\n示例：\nString s = \"121\";\nchar c1 = s.charAt(0); // 取下标0 → 第一个字符 '1'\nchar c2 = s.charAt(1); // 取下标1 → 第二个字符 '2'\nchar c3 = s.charAt(2); // 取下标2 → 第三个字符 '1'\nSystem.out.println(c1); // 1"},{"name":"valueOf()","content":"包装类自带的静态方法。\n作用：把别的格式数据，转换成自己这个类的对象。\n格式通用：类名.valueOf(参数)，固定是静态方法，用类名直接调用，不用 new 对象。"},{"name":"final 关键字","content":"三种使用位置 + 作用：\n1. 修饰变量：变量的值一旦赋值，就无法二次修改（常量）\n   - 基本数据类型：数值固定不能改\n   - 引用数据类型：引用地址不可变，但对象内部属性可以修改\n2. 修饰方法：该方法不能被子类重写（override），锁住方法逻辑\n\n用法：\n- 常量数字用 final：final int TEST_NUM = 12321;\n- 方法禁止重写加 final：public static final boolean isPalindrome(int x) {...}\n\nfinal / static / static final 区别：\n- final：常量，每个实例独有一份\n- static：静态，所有实例共用一份\n- static final：全局常量（项目里统一的固定值，一般大写命名 MAX_NUM）"},{"name":"substring()","content":"两个重载方法：\n1. substring(int beginIndex)\n   从 beginIndex 下标一直截取到字符串末尾\n   String s = \"flower\";\n   String res = s.substring(2); // 下标2是w，结果：\"ower\"\n2. substring(int beginIndex, int endIndex)\n   截取区间：左闭右开 [begin, end)\n   包含 begin 下标字符，不包含 end 下标字符\n   String s = \"flower\";\n   s.substring(0,2); // 下标0=f、下标1=l，下标2不算，截取结果：\"fl\"\n"}]},{"name":"大数值","children":[{"name":"BigInteger / BigDecimal","content":"普通 int、long 有上限，数值超大 / 高精度小数会溢出、丢失精度，Java 提供两个专用类：\n- BigInteger：超大整数，无位数限制\n- BigDecimal：超大小数，金融计算必用（无浮点误差）\n都在 java.math，必须导包：\nimport java.math.BigInteger;\nimport java.math.BigDecimal;"},{"name":"BigInteger 使用","content":"创建对象（三种方式）：\n1. 字符串创建（推荐，超大数字只能用字符串）\n   BigInteger num1 = new BigInteger(\"123456789012345678901234567890\");\n2. long 转 BigInteger（数字不超 long 范围可用）\n   BigInteger num2 = BigInteger.valueOf(9999L);\n3. 内置常量\n   BigInteger zero = BigInteger.ZERO; // 0\n   BigInteger one = BigInteger.ONE;   // 1\n   BigInteger ten = BigInteger.TEN;   // 10\n\n四则运算（不能用 + - * /，调用方法）：\nBigInteger a = new BigInteger(\"100\");\nBigInteger b = new BigInteger(\"30\");\nBigInteger add = a.add(b);      // 加 130\nBigInteger sub = a.subtract(b); // 减 70\nBigInteger mul = a.multiply(b); // 乘 3000\nBigInteger div = a.divide(b);   // 整除 3\nBigInteger mod = a.mod(b);      // 取余 10"}]},{"name":"构建字符串与其他","children":[{"name":"块作用区","content":"块是指由一对花括号括起来的若干条简单的 java 语句，块确定了变量的作用域。一个块可以嵌套在另一个块中。\n注意：不能在嵌套的两个块中声明同名的变量"},{"name":"API 概念","content":"API = 现成可调用的工具函数 / 功能接口。"}]},{"name":"刷题练习","children":[{"name":"两数之和（LeetCode）","content":"题目：给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出和为目标值 target 的那两个整数，并返回它们的数组下标。\n- 你可以假设每种输入只会对应一个答案，并且你不能使用两次相同的元素\n- 你可以按任意顺序返回答案\n\n示例 1：\n输入：nums = [2,7,11,15], target = 9\n输出：[0,1]\n解释：因为 nums[0] + nums[1] == 9，返回 [0, 1]\n\n示例 2：\n输入：nums = [3,2,4], target = 6\n输出：[1,2]\n\n示例 3：\n输入：nums = [3,3], target = 6\n输出：[0,1]\n\n提示：return new int[]{0,1}; 返回下标数组"}]}]};
+
+/* ===== 应用逻辑 ===== */
+(function(){
+'use strict';
+
+// ---------- 数据层 ----------
+const LS_KEY = 'java_review_tree_v1';
+let tree = null;      // 完整树（base + 用户节点）
+let flatMap = {};     // id -> node
+let flatList = [];    // 所有节点
+let selectedId = null;
+let currentView = 'home';
+
+function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
+
+// 为每个节点分配稳定 id（base 用路径，用户节点用时间戳）
+function assignIds(list, prefix){
+  list.forEach((n,i)=>{
+    const id = (n._id || (prefix + (i+1)));
+    n.id = id;
+    if(n.children) assignIds(n.children, id + '.');
+  });
+}
+
+function walk(list, fn){
+  list.forEach(n=>{ fn(n); if(n.children) walk(n.children, fn); });
+}
+
+function index(){
+  flatMap = {}; flatList = [];
+  walk(tree, n=>{ flatMap[n.id]=n; flatList.push(n); });
+  // 计算路径与 leaf 标记
+  walk(tree, n=>{
+    n.path = pathOf(n.id);
+    n.isLeaf = !(n.children && n.children.length);
+    n.desc = n.children ? (n.children.length + ' 个子节点') : (n.content ? n.content.split('\n').length + ' 行笔记' : '');
+  });
+}
+
+function pathOf(id){
+  const parts=[];
+  let cur=flatMap[id], guard=0;
+  while(cur && guard++<50){ parts.unshift(cur.name); cur = cur.parentId ? flatMap[cur.parentId] : null; }
+  return parts;
+}
+
+function load(){
+  let base = deepClone(BASE.root);
+  assignIds(base, 'b');
+  // 记录 base 中用户添加节点的 id 起点
+  let userTree = null;
+  try{ const raw = localStorage.getItem(LS_KEY); if(raw) userTree = JSON.parse(raw); }catch(e){}
+  // 合并：base 保持，userTree 整体作为附加（含 base 快照可能被覆盖——这里用纯用户新增）
+  // 简化：userTree 存的是"用户新增节点列表"，挂到根下
+  tree = base;
+  if(userTree && userTree.userNodes){
+    // 用户节点已带 parentId，需挂回
+    userTree.userNodes.forEach(un=>{
+      const parent = un.parentId && flatMap[un.parentId] ? flatMap[un.parentId] : null;
+      if(parent){ if(!parent.children) parent.children=[]; parent.children.push(un); }
+      else tree.push(un);
+    });
+  }
+  index();
+}
+
+// 状态（复习进度）单独存
+const ST_KEY = 'java_review_state_v1';
+function loadState(){ try{ return JSON.parse(localStorage.getItem(ST_KEY))||{}; }catch(e){ return {}; } }
+function saveState(s){ localStorage.setItem(ST_KEY, JSON.stringify(s)); }
+let state = loadState();
+
+// 用户新增节点存
+const UN_KEY = 'java_review_user_v1';
+function loadUserNodes(){ try{ return JSON.parse(localStorage.getItem(UN_KEY))||[]; }catch(e){ return []; } }
+function saveUserNodes(list){ localStorage.setItem(UN_KEY, JSON.stringify(list)); }
+
+// ---------- 树渲染 ----------
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderTree(){
+  const el = document.getElementById('tree');
+  el.innerHTML = buildTreeHtml(tree, true);
+  document.getElementById('treeCount').textContent = flatList.length + ' 个知识点';
+}
+
+function buildTreeHtml(list, expanded){
+  return list.map(n=>{
+    const hasKids = n.children && n.children.length;
+    const isOpen = expanded || !!n._open;
+    const statusCls = state[n.id] ? 's-'+state[n.id] : '';
+    const caret = hasKids ? `<span class="caret ${isOpen?'open':''}">▶</span>` : '';
+    const dot = n.isUser ? '<span class="dot user"></span>' : '';
+    const kidsHtml = hasKids ? `<div class="tchildren">${buildTreeHtml(n.children,false)}</div>` : '';
+    return `<div class="tnode ${isOpen?'':'collapsed'} ${statusCls}" data-id="${esc(n.id)}">
+      <div class="trow ${selectedId===n.id?'active':''}" data-id="${esc(n.id)}">
+        ${caret}<span class="name">${esc(n.name)}</span>${dot}
+      </div>${kidsHtml}
+    </div>`;
+  }).join('');
+}
+function syncOpenIds(){ walk(tree,n=>{ if(n._open===undefined) n._open=false; }); }
+
+document.getElementById('tree').addEventListener('click', e=>{
+  const row = e.target.closest('.trow');
+  if(!row) return;
+  const id = row.getAttribute('data-id');
+  const n = flatMap[id];
+  if(!n) return;
+  // 记录 open 状态
+  n._open = !n._open;
+  if(n.children && n.children.length){
+    selectNode(id, true);
+  } else {
+    selectNode(id);
+  }
+  renderTree();
+});
+
+function selectNode(id, keepFocus){
+  selectedId = id;
+  currentView = 'node';
+  document.getElementById('viewHome').classList.add('hidden');
+  document.getElementById('viewNode').classList.remove('hidden');
+  renderNode();
+  renderTree();
+  if(window.innerWidth <= 820) closeSidebar();
+}
+
+// ---------- 内容渲染 ----------
+const CODE_RE = /^(\s*(public|private|protected|static|import|class|package|return|void|int|String|char|long|float|double|boolean|byte|short|new|final|Scanner|System|BigInteger|BigDecimal|for|while|if|else|switch|case|default|break|continue)\b)|[;{}\[\]()=<>+\-*/%]|^\s*\/\/|\.next|\.add\(|\.sub|\.mul|\.div|\.mod|\.valueOf|\.charAt|\.substring|\.toString|System\.out/;
+
+function classifyLine(line){
+  const trimmed = line.trim();
+  if(!trimmed) return 'empty';
+  // 中文比例高且不以代码关键词开头 → 笔记
+  const cjk = (trimmed.match(/[\u4e00-\u9fa5]/g)||[]).length;
+  const total = trimmed.length;
+  const ratio = total ? cjk/total : 0;
+  if(ratio > 0.45) return 'note';
+  return 'code';
+}
+
+function renderContentLines(content){
+  const lines = (content||'').split('\n');
+  return lines.map(line=>{
+    const c = classifyLine(line);
+    if(c==='empty') return '<span class="line empty"></span>';
+    if(c==='code') return `<code class="line code">${esc(line)}</code>`;
+    return `<span class="line note">${esc(line)}</span>`;
+  }).join('');
+}
+
+function renderNode(){
+  const n = flatMap[selectedId];
+  if(!n) return;
+  const wrap = document.getElementById('viewNode');
+  const crumbs = n.path.map((p,i)=>`<button data-crumb="${i===n.path.length-1?'self':''}" ${i<n.path.length-1?'data-jump="'+esc(n.id)+'"':''} >${esc(p)}</button>`)
+    .join('<span class="sep">/</span>');
+  const badges = `<span class="badge ${n.isUser?'user':'leaf'}">${n.isUser?'我的笔记':'知识点'}</span>`;
+  const statCls = state[n.id];
+  const statBar = `<div class="status-bar">
+      <button class="stat-btn ${statCls==='reviewed'?'on-review':''}" data-stat="reviewed" data-id="${esc(n.id)}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>已复习</button>
+      <button class="stat-btn ${statCls==='mastered'?'on-master':''}" data-stat="mastered" data-id="${esc(n.id)}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg>已掌握</button>
+      ${statCls?'<button class="stat-btn" data-stat="reset" data-id="'+esc(n.id)+'">撤销</button>':''}
+    </div>`;
+
+  let body = '';
+  if(n.content){
+    body = `<div class="content"><div class="block">${renderContentLines(n.content)}</div></div>`;
+  } else if(n.children && n.children.length){
+    const cards = n.children.map(c=>{
+      const hasC = c.content ? ' has-content' : '';
+      return `<button class="child-card${hasC}" data-child="${esc(c.id)}"><div class="c-name">${esc(c.name)}</div><div class="c-desc">${esc(c.desc||'')}</div></button>`;
+    }).join('');
+    body = `<div class="node-children"><div class="label">下面 ${n.children.length} 个子知识点，点击进入详情</div><div class="child-grid">${cards}</div></div>`;
+  } else {
+    body = `<div class="node-empty">这个知识点还没有内容，点击右上角「添加新知识」补充。</div>`;
+  }
+
+  wrap.innerHTML = `
+    <div class="crumbs">${crumbs}</div>
+    <div class="node-head">
+      <div>
+        <h1>${esc(n.name)}</h1>
+        <div class="meta">${badges}</div>
+      </div>
+      ${statBar}
+    </div>
+    ${body}`;
+
+  document.getElementById('main').scrollTop = 0;
+}
+
+// 事件委托：内容区
+document.getElementById('main').addEventListener('click', e=>{
+  const crumb = e.target.closest('[data-jump]');
+  if(crumb){ selectNode(crumb.getAttribute('data-jump')); return; }
+  const child = e.target.closest('[data-child]');
+  if(child){ selectNode(child.getAttribute('data-child')); return; }
+  const stat = e.target.closest('[data-stat]');
+  if(stat){
+    const id = stat.getAttribute('data-id'); const s = stat.getAttribute('data-stat');
+    if(s==='reset') delete state[id]; else state[id]=s;
+    saveState(state); renderNode(); renderTree();
+    toast(s==='mastered'?'标记为已掌握':'已记录复习状态');
+  }
+});
+
+// ---------- 首页 ----------
+function renderHome(){
+  const wrap = document.getElementById('viewHome');
+  let reviewed=0, mastered=0, userCount=0;
+  flatList.forEach(n=>{ if(state[n.id]==='reviewed')reviewed++; if(state[n.id]==='mastered')mastered++; if(n.isUser)userCount++; });
+  const cards = tree.map((n,i)=>{
+    const cnt = countNodes(n);
+    return `<button class="ov-card" data-ov="${esc(n.id)}">
+      <div class="ov-no">${String(i+1).padStart(2,'0')}</div>
+      <div class="ov-name">${esc(n.name)}</div>
+      <div class="ov-desc">${esc(n.desc||'')}</div>
+      <div class="ov-count">${cnt} 个知识点</div>
+    </button>`;
+  }).join('');
+  wrap.innerHTML = `
+    <h1>Java 复习知识树</h1>
+    <p class="sub">整理自你的 Java 学习笔记。左侧目录可逐级展开查找每个知识点；搜不到就点「添加新知识」随时补充；联网时可用「智能整理」把新学的内容自动整理进树里。</p>
+    <div class="stat-strip">
+      <span class="stat-chip"><b>${flatList.length}</b>知识点</span>
+      <span class="stat-chip"><b>${userCount}</b>我的笔记</span>
+      <span class="stat-chip"><b>${reviewed}</b>已复习</span>
+      <span class="stat-chip"><b>${mastered}</b>已掌握</span>
+    </div>
+    <div class="overview-grid">${cards}</div>`;
+  if(window.innerWidth<=820) closeSidebar();
+}
+function countNodes(n){ let c=1; if(n.children)n.children.forEach(x=>c+=countNodes(x)); return c; }
+
+document.getElementById('viewHome').addEventListener('click', e=>{
+  const card = e.target.closest('[data-ov]');
+  if(card) selectNode(card.getAttribute('data-ov'));
+});
+
+// ---------- 搜索 ----------
+let searchResults = [];
+function doSearch(q){
+  q = (q||'').trim().toLowerCase();
+  const box = document.getElementById('tree');
+  if(!q){
+    searchResults=[]; renderTree(); return;
+  }
+  searchResults = flatList.filter(n=>{
+    const hay = (n.name+' '+ (n.content||'')+' '+n.path.join(' ')).toLowerCase();
+    return hay.includes(q);
+  });
+  if(!searchResults.length){
+    box.innerHTML = `<div class="empty-tip">没有找到「${esc(q)}」。试试换关键词，或点「添加新知识」收录它。</div>`;
+    return;
+  }
+  box.innerHTML = `<div class="search-results">` + searchResults.map((n,i)=>{
+    const path = n.path.join(' / ');
+    return `<button class="sr-item ${selectedId===n.id?'active':''}" data-sr="${esc(n.id)}">
+      <span class="sr-path">${highlight(path,q)}</span>
+      <span class="sr-title">${highlight(n.name,q)}</span>
+    </button>`;
+  }).join('') + `</div>`;
+}
+function highlight(text,q){
+  const i = text.toLowerCase().indexOf(q);
+  if(i<0) return esc(text);
+  return esc(text.slice(0,i)) + '<span class="hl">' + esc(text.slice(i,i+q.length)) + '</span>' + esc(text.slice(i+q.length));
+}
+document.getElementById('tree').addEventListener('click', e=>{
+  const sr = e.target.closest('[data-sr]');
+  if(sr){
+    const id = sr.getAttribute('data-sr');
+    document.getElementById('searchInput').value = '';
+    doSearch('');
+    selectNode(id);
+  }
+});
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', e=>{
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(()=>doSearch(e.target.value), 180);
+});
+document.getElementById('searchInput').addEventListener('keydown', e=>{
+  if(e.key==='Enter' && searchResults.length){ selectNode(searchResults[0].id); }
+});
+
+// ---------- 添加 ----------
+function fillParentSelect(){
+  const sel = document.getElementById('addParent');
+  sel.innerHTML = `<option value="">根目录（新建一级分类）</option>` + flatList.filter(n=>!n.isLeaf || n.children).map(n=>`<option value="${esc(n.id)}">${esc('　'.repeat(depthOf(n.id)) + n.name)}</option>`).join('');
+}
+function depthOf(id){ return pathOf(id).length; }
+
+document.getElementById('addBtn').addEventListener('click', ()=>{ fillParentSelect(); openModal('ovAdd'); });
+document.getElementById('addSaveBtn').addEventListener('click', ()=>{
+  const title = document.getElementById('addTitle').value.trim();
+  const content = document.getElementById('addContent').value.trim();
+  if(!title){ toast('请填写知识点标题'); return; }
+  const parentId = document.getElementById('addParent').value;
+  const uid = 'u' + Date.now();
+  const newNode = { id:uid, name:title, content:content, isUser:true, _open:false };
+  // 找父节点
+  let parent = null;
+  if(parentId) parent = flatMap[parentId];
+  if(parent){ if(!parent.children) parent.children=[]; parent.children.push(newNode); }
+  else tree.push(newNode);
+  // 保存用户节点
+  const un = loadUserNodes();
+  un.push({ id:uid, name:title, content:content, isUser:true, parentId: parentId||null });
+  saveUserNodes(un);
+  index();
+  renderHome(); renderTree();
+  document.getElementById('addTitle').value=''; document.getElementById('addContent').value='';
+  closeModal('ovAdd');
+  selectNode(uid);
+  toast('已添加：'+title);
+});
+
+// ---------- 智能整理 ----------
+let aiResults = [];
+let settings = {url:'',key:'',model:''};
+try{ settings = Object.assign(settings, JSON.parse(localStorage.getItem('java_review_ai')||'{}')); }catch(e){}
+
+document.getElementById('aiBtn').addEventListener('click', ()=>{ openModal('ovAI'); updateOnlineBanner(); });
+document.getElementById('aiSettingsBtn').addEventListener('click', ()=>{
+  document.getElementById('setUrl').value=settings.url;
+  document.getElementById('setKey').value=settings.key;
+  document.getElementById('setModel').value=settings.model;
+  openModal('ovSettings');
+});
+document.getElementById('setSaveBtn').addEventListener('click', ()=>{
+  settings.url=document.getElementById('setUrl').value.trim();
+  settings.key=document.getElementById('setKey').value.trim();
+  settings.model=document.getElementById('setModel').value.trim();
+  localStorage.setItem('java_review_ai', JSON.stringify(settings));
+  closeModal('ovSettings'); updateOnlineBanner();
+  toast(settings.url?'AI 接口设置已保存':'已清除 AI 接口设置，将使用本机整理');
+});
+
+function updateOnlineBanner(){
+  const banner = document.getElementById('onlineBanner');
+  if(navigator.onLine && settings.url) banner.classList.add('on');
+  else banner.classList.remove('on');
+}
+
+// 本机整理：把原始文本切成要点
+function localOrganize(raw){
+  const blocks = [];
+  let curTitle=''; let curBody=[];
+  const lines = raw.split('\n');
+  const flush=()=>{ if(curTitle||curBody.length){ blocks.push({title:curTitle||curBody[0]||'未命名要点', body:curBody.join('\n')}); } curTitle=''; curBody=[]; };
+  lines.forEach(line=>{
+    const t=line.trim();
+    if(/^(.+?)[：:]\s*$/.test(t) && t.length<=20){
+      flush(); curTitle = t.replace(/[：:]$/,'').trim();
+    } else if(/^---+\s*$/.test(t)){
+      flush();
+    } else if(t){
+      curBody.push(line);
+    } else {
+      if(curBody.length) flush();
+    }
+  });
+  flush();
+  return blocks.filter(b=>b.body.trim()).map(b=>({title:b.title, body:b.body.trim()}));
+}
+
+document.getElementById('aiLocalBtn').addEventListener('click', ()=>{
+  const raw = document.getElementById('aiLocalText').value;
+  if(!raw.trim()){ toast('请先粘贴笔记内容'); return; }
+  const items = localOrganize(raw);
+  if(!items.length){ toast('没能识别出内容，请检查输入'); return; }
+  showAiPreview(items, '本机整理');
+});
+document.getElementById('aiOnlineBtn').addEventListener('click', ()=>{
+  const raw = document.getElementById('aiOnlineText').value;
+  if(!raw.trim()){ toast('请先粘贴笔记内容'); return; }
+  if(!navigator.onLine){ setStatus('当前处于离线状态，已自动改用本机整理。','warn'); doLocalFallback(raw); return; }
+  if(!settings.url){ setStatus('未配置 AI 接口，改用本机整理。','warn'); doLocalFallback(raw); return; }
+  setStatus('正在调用 AI 整理，请稍候…','info');
+  callAI(raw).then(items=>{
+    if(!items || !items.length){ throw new Error('AI 返回为空'); }
+    setStatus('AI 整理完成。','ok');
+    showAiPreview(items, 'AI 整理');
+  }).catch(err=>{
+    setStatus('AI 调用失败（'+err.message+'），已改用本机整理。','error');
+    doLocalFallback(raw);
+  });
+});
+function doLocalFallback(raw){
+  const items = localOrganize(raw);
+  showAiPreview(items, '本机整理（离线兜底）');
+}
+function setStatus(msg,type){ const el=document.getElementById('aiStatus'); el.textContent=msg; el.className='ai-status show'+(type==='error'?' error':''); if(type==='ok') setTimeout(()=>el.classList.remove('show'),2500); }
+function clearStatus(){ const el=document.getElementById('aiStatus'); el.className='ai-status'; el.textContent=''; }
+
+async function callAI(raw){
+  const sys = `你是一个 Java 学习笔记整理助手。用户会粘贴一段关于 Java 的原始学习笔记。请把它整理成若干条结构化知识点。只输出 JSON，格式为：[{"title":"知识点标题","body":"知识点正文（要点式，可含代码示例）"}]。不要输出任何 JSON 以外的内容。`;
+  const resp = await fetch(settings.url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.key},
+    body: JSON.stringify({model: settings.model||'gpt-4o-mini', messages:[{role:'system',content:sys},{role:'user',content:raw}], temperature:0.3})
+  });
+  if(!resp.ok) throw new Error('HTTP '+resp.status);
+  const data = await resp.json();
+  const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+  if(!content) throw new Error('无返回内容');
+  const m = content.match(/\[[\s\S]*\]/);
+  if(!m) throw new Error('返回格式异常');
+  return JSON.parse(m[0]);
+}
+
+function showAiPreview(items, mode){
+  aiResults = items.map(it=>({title:it.title, body:it.body, checked:true}));
+  const list = document.getElementById('aiPreviewList');
+  list.innerHTML = aiResults.map((it,i)=>`
+    <div class="p-item">
+      <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+        <input type="checkbox" data-ai-check="${i}" ${it.checked?'checked':''} style="width:16px;margin-top:3px">
+        <span style="flex:1">
+          <span class="p-title">${esc(it.title)}</span>
+          <span class="p-parent">将添加到根目录（可在加入后调整位置）</span>
+          <span class="p-body">${esc(it.body)}</span>
+        </span>
+      </label>
+    </div>`).join('');
+  document.getElementById('aiPreview').classList.remove('hidden');
+  document.getElementById('aiConfirmBtn').classList.remove('hidden');
+  document.getElementById('aiLocalText').value=''; document.getElementById('aiOnlineText').value='';
+}
+document.getElementById('aiPreviewList').addEventListener('change', e=>{
+  const chk=e.target.closest('[data-ai-check]');
+  if(chk){ const i=+chk.getAttribute('data-ai-check'); aiResults[i].checked=chk.checked; }
+});
+document.getElementById('aiConfirmBtn').addEventListener('click', ()=>{
+  const chosen = aiResults.filter(r=>r.checked);
+  if(!chosen.length){ toast('未选择任何知识点'); return; }
+  const parentId = document.getElementById('addParent').value || '';
+  chosen.forEach((it,idx)=>{
+    const uid='u'+Date.now()+idx;
+    const node={ id:uid, name:it.title, content:it.body, isUser:true, _open:false };
+    let parent = parentId && flatMap[parentId] ? flatMap[parentId] : null;
+    if(parent){ if(!parent.children)parent.children=[]; parent.children.push(node); }
+    else tree.push(node);
+    const un=loadUserNodes(); un.push({id:uid,name:it.title,content:it.body,isUser:true,parentId:parentId||null}); saveUserNodes(un);
+  });
+  index(); renderHome(); renderTree();
+  clearStatus();
+  document.getElementById('aiPreview').classList.add('hidden');
+  document.getElementById('aiConfirmBtn').classList.add('hidden');
+  closeModal('ovAI');
+  toast('已加入 '+chosen.length+' 个知识点');
+});
+
+// ---------- 导入 ----------
+document.getElementById('importBtn').addEventListener('click', ()=>{ openModal('ovImport'); });
+document.getElementById('impBtn').addEventListener('click', ()=>{
+  const mode = currentImportTab;
+  if(mode==='json'){
+    try{
+      const data = JSON.parse(document.getElementById('impJson').value);
+      importFromJson(data);
+    }catch(err){ toast('JSON 解析失败：'+err.message); }
+    return;
+  }
+  const raw = document.getElementById('impTxt').value;
+  if(!raw.trim()){ toast('请粘贴内容'); return; }
+  importFromText(raw);
+});
+
+let currentImportTab='txt';
+document.querySelectorAll('#ovImport .tab').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    currentImportTab=b.getAttribute('data-tab');
+    document.querySelectorAll('#ovImport .tab').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('imp-txt').classList.toggle('hidden', currentImportTab!=='txt');
+    document.getElementById('imp-json').classList.toggle('hidden', currentImportTab!=='json');
+  });
+});
+
+function importFromText(raw){
+  const sections = raw.split(/\n---+\s*\n?/);
+  let category = null;
+  let count=0;
+  sections.forEach(sec=>{
+    sec=sec.trim(); if(!sec) return;
+    const lines = sec.split('\n');
+    const first = lines[0].trim();
+    if(/^#\s+/.test(first)){ category = first.replace(/^#\s+/,'').trim(); lines.shift(); }
+    // 找标题行 "标题: xxx"
+    let title=null, bodyLines=[];
+    const tmatch = lines[0] && lines[0].match(/^标题[：:]\s*(.+)$/);
+    if(tmatch){ title=tmatch[1].trim(); bodyLines=lines.slice(1); }
+    else { title=lines[0]||'未命名'; bodyLines=lines.slice(1); }
+    const body=bodyLines.join('\n').trim();
+    // 确定父节点
+    let parent=null;
+    if(category){
+      parent = flatList.find(n=>n.name===category && !n.isUser);
+    }
+    const uid='u'+Date.now()+Math.random().toString(16).slice(2,7);
+    const node={ id:uid, name:title, content:body, isUser:true, _open:false };
+    if(parent){ if(!parent.children)parent.children=[]; parent.children.push(node); }
+    else tree.push(node);
+    const un=loadUserNodes(); un.push({id:uid,name:title,content:body,isUser:true,parentId:parent?parent.id:null}); saveUserNodes(un);
+    count++;
+  });
+  index(); renderHome(); renderTree();
+  closeModal('ovImport');
+  toast('导入完成，新增 '+count+' 个知识点');
+}
+
+function importFromJson(data){
+  // 接受：{userNodes:[...]} 或整体树
+  if(data && data.userNodes && Array.isArray(data.userNodes)){
+    data.userNodes.forEach(un=>{
+      const uid=un.id||('u'+Date.now()+Math.random().toString(16).slice(2,7));
+      const node={ id:uid, name:un.name, content:un.content||'', isUser:true, _open:false };
+      let parent = un.parentId && flatMap[un.parentId] ? flatMap[un.parentId] : null;
+      if(parent){ if(!parent.children)parent.children=[]; parent.children.push(node); }
+      else tree.push(node);
+      const lst=loadUserNodes(); if(!lst.find(x=>x.id===uid)) lst.push({id:uid,name:un.name,content:un.content||'',isUser:true,parentId:un.parentId||null}); saveUserNodes(lst);
+    });
+    index(); renderHome(); renderTree(); closeModal('ovImport'); toast('已从 JSON 恢复用户笔记');
+    return;
+  }
+  toast('未识别到可导入的数据结构');
+}
+
+// ---------- 导出 ----------
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const payload = {version:1, exportedAt:new Date().toISOString(), userNodes:loadUserNodes(), state:state};
+  const json = JSON.stringify(payload,null,2);
+  download('Java复习知识树-备份.json', json);
+  toast('已导出备份（含全部笔记与复习进度）');
+});
+function download(name, text){
+  const blob = new Blob([text],{type:'application/json;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+
+// ---------- 通用 ----------
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('[data-close]').forEach(b=> b.addEventListener('click',()=>closeModal(b.getAttribute('data-close'))));
+document.querySelectorAll('.overlay').forEach(ov=> ov.addEventListener('click', e=>{ if(e.target===ov) ov.classList.remove('open'); }));
+
+document.getElementById('menuBtn').addEventListener('click', ()=>{ document.getElementById('sidebar').classList.toggle('open'); });
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); }
+
+// Tab 切换（AI / Import）
+function wireTabs(rootId, fn){
+  document.querySelectorAll(rootId+' .tab').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const pane=b.getAttribute('data-tab');
+      document.querySelectorAll(rootId+' .tab').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      fn(pane);
+    });
+  });
+}
+wireTabs('#ovAI', (pane)=>{
+  document.getElementById('pane-local').classList.toggle('hidden', pane!=='local');
+  document.getElementById('pane-online').classList.toggle('hidden', pane!=='online');
+});
+
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// 键盘：Esc 关闭弹窗
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open')); });
+
+// 初始化
+window.addEventListener('online', ()=>{ updateOnlineBanner(); toast('网络已连接，可用 AI 整理'); });
+window.addEventListener('offline', ()=>{ updateOnlineBanner(); toast('已离线，本机整理仍可用'); });
+function init(){
+  load();
+  renderHome();
+  renderTree();
+}
+init();
+
+})();
+</script>
+</body>
+</html>
