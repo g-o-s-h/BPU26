@@ -4,6 +4,20 @@ C 语言 & AI 课程笔记仓库。每天一个临时分支，事后合并到 `d
 
 ---
 
+## 🌟 核心速查与资源 Resources
+
+为了方便复习和查阅，旧课程的核心资料与代码范例已归档至 `archive/` 目录：
+
+- **Python**
+  - [速查清单 (Checklist)](./archive/python/.docs/checklist.md)
+  - [详细讲义 (Reference)](./archive/python/.docs/reference.md)
+- **Java**
+  - [速查清单 (HTML)](./archive/java/.docs/checklist.html)
+- **C++**
+  - [课程大纲与介绍](./archive/cpp/.docs/课程介绍.md)
+
+---
+
 ## 一、分支规范 Branch Standard
 
 ### 1. 命名逻辑 Naming Logic
@@ -58,7 +72,7 @@ execute ?                   显示帮助
 - 支持后缀 `.c` `.cpp` `.cc` `.cxx` `.py`
 - 找到 1 个 → 直接处理；找到多个 → 列出菜单选择
 - **时间戳缓存**：exe 比源文件新时跳过编译，直接运行
-- `.c` 用 gcc，`.cpp` 用 g++
+- `.c` 用 gcc，`.cpp` 用 g++ (多文件工程由于目前放在 `archive/cpp/sorting/`，如果需要批量编译可能需要配合 Makefile 或手动构建)
 - `.py` 优先使用根目录 `.venv`，否则用系统 python
 - 编译 C/C++ 时加 `-fexec-charset=GBK`，让源文件中的中文在 cmd 正常显示
 - 运行 Python 时自动注入 `PYTHONPATH=%REPO_ROOT%`，方便在子目录中直接 `import ai_method`，用法详见 [ai_method 接口说明](ai_method/ai.md)
@@ -226,6 +240,18 @@ BPU26/
 │   └── _secrets_/            存放密钥
 │       ├── loader.py         配置读取器
 │       └── secret.json       实际 API Key 配置文件（git 忽略）
+├── archive/                  旧资料归档 / 代码范例库
+│   ├── cpp/                  C++ 学习资料与范例
+│   │   ├── .docs/            曾经的课纲和随记
+│   │   └── sorting/          排序
+│   ├── java/                 Java 学习资料
+│   │   └── .docs/            速查表（HTML）
+│   └── python/               Python 学习资料与范例
+│       ├── .docs/            速查表、学习笔记
+│       ├── basic_code/       基础片段
+│       ├── knn/              KNN
+│       ├── sorting/          排序
+│       └── turtle/           海龟作图
 ├── date/                     按日期归档的课堂记录
 │   ├── 20261020-c/           2026-10-20 C 语言课
 │   │   ├── note.md           课堂笔记
@@ -259,18 +285,22 @@ BPU26/
 - 目录名 = 分支名，形如 `<yyyyMMdd>-<type>`（`c` 代表 C 语言，`ai` 代表人工智能，`other` 代表其他）。
 - 每天一个目录，里面存放当天的 `note.md`、源代码（`.c` / `.py`）、以及相关产物。不仅记录笔记，也记录随堂练习代码。
 
-**2. `ai_method/` 模块**
+**2. `archive/` 目录**
+- 存放以往学习过的其他语言（Python、Java、C++）的旧资料和代码范例。
+- 作为个人知识库，将长期沉淀的核心笔记（如 Checklist）与代码片段分类保存。
+
+**3. `ai_method/` 模块**
 - 为了提升代码复用性（DRY 原则）而自研封装的 Python 工具库。
 - `utils.py` 中封装了系统原生文件选择器（`pick_file`）、百度 AI 客户端实例化（`get_baidu_client`）、文件二进制读取（`get_file_content`）和 JSON 格式化输出（`print_json`）。
 - 业务代码（如 `date/20261021-ai/study.py`）只需 `import ai_method.utils as ai` 即可极简调用。
 - `_secrets_/` 用于安全隔离密钥，已在 `.gitignore` 中屏蔽，绝不污染版本库。
 
-**3. 脚本**
+**4. 脚本**
 - 根目录下的 `.bat` 与 `.py` 脚本为自动化基础设施，详细用法见上文“脚本说明”。
 
 ### 目录命名规则
 
-- 目录名 = 分支名，形如 `<yyyyMMdd>-<type>`
+- `date/` 下的目录名 = 分支名，形如 `<yyyyMMdd>-<type>`
 - `<type>` 取值：`c`（C 语言课）、`ai`（AI 课）、`other`（其他）
 - 每个目录下按需放置代码、笔记、作业等
 - 目录数量随时间增长，上面仅为格式示例
@@ -363,4 +393,4 @@ BPU26/
 
 ---
 
-_最后更新：2026-10-18_
+_最后更新：2026-10-27 Deepseek_
