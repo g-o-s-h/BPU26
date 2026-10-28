@@ -1,0 +1,2 @@
+# 默认所有文件在提交到 GitHub 和检出时都用 CRLF
+* text=auto eol=crlf

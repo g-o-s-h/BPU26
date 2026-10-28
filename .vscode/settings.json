@@ -1,12 +1,19 @@
 {
-    // 全局默认编码保持 UTF-8
-    "files.encoding": "utf8",
+    // 1. 默认终端强行指定为 CMD（避免 PowerShell 的各种玄学问题）
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
 
-    // 为 bat 语言单独设置 GBK 编码
+    // 2. 全局默认编码为 UTF-8，但 bat 文件强制 GBK
+    "files.encoding": "utf8",
     "[bat]": {
         "files.encoding": "gbk"
     },
 
-    // 不自动进入 venv
-    "python.terminal.activateEnvironment": false
+    // 3. 全仓库统一 CRLF（防止换行符带来的任何意外）
+    "files.eol": "\r\n",
+
+    // 4. 关闭 Python 终端自动激活（根据你之前的偏好）
+    "python.terminal.activateEnvironment": false,
+    
+    // 5. 指定 Python 解释器路径
+    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
 }
