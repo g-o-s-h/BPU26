@@ -34,9 +34,9 @@ C 语言 & AI 课程笔记仓库。每天一个临时分支，事后合并到 `d
 
 ### 2. 分支生命周期 Branch Lifecycle
 
-- **临时分支**：每次上课或写作业时创建，**仅保留在本地**，不推送 GitHub
-- **dev 分支**：主开发线，所有临时分支最终合并到这里，并由 `close` 推送到 GitHub
-- **main 分支**：稳定发布线，仅当项目达到"正式版"标准时从 dev 合并
+- **临时分支**：每次上课或写作业时创建，**仅保留在本地**，不推送 GitHub。
+- **dev 分支**：主开发线，所有临时分支最终合并到这里，并由 `close` 推送到 GitHub。
+- **main 分支**：稳定发布线，仅当项目达到"正式版"标准时从 dev 合并。
 
 ---
 
@@ -72,7 +72,7 @@ execute ?                   显示帮助
 - 支持后缀 `.c` `.cpp` `.cc` `.cxx` `.py`
 - 找到 1 个 → 直接处理；找到多个 → 列出菜单选择
 - **时间戳缓存**：exe 比源文件新时跳过编译，直接运行
-- `.c` 用 gcc，`.cpp` 用 g++ (多文件工程由于目前放在 `archive/cpp/sorting/`，如果需要批量编译可能需要配合 Makefile 或手动构建)
+- `.c` 用 gcc，`.cpp` 用 g++ (多文件工程如 `archive/cpp/sorting/` 可能需要配合 Makefile 或手动构建)
 - `.py` 优先使用根目录 `.venv`，否则用系统 python
 - 编译 C/C++ 时加 `-fexec-charset=GBK`，让源文件中的中文在 cmd 正常显示
 - 运行 Python 时自动注入 `PYTHONPATH=%REPO_ROOT%`，方便在子目录中直接 `import ai_method`，用法详见 [ai_method 接口说明](ai_method/ai.md)
@@ -121,7 +121,7 @@ venv ?                 显示帮助
 `.venv/` 已在 `.gitignore` 中。
 
 **⚠️ 重要提示：**
-日常跑代码或装包，推荐直接使用**命令代理模式**（如 `venv pip`、`venv python`），此模式无需激活环境。如果你需要让终端前缀出现 `(.venv)`，请手动执行 `.venv\Scripts\activate`（因为 CMD 机制限制，直接运行 bat 无法将环境变量继承到当前窗口）。
+日常跑代码或装包，推荐直接使用**命令代理模式**（如 `venv pip`、`venv python`），此模式无需激活环境。如果你需要让终端前缀出现 `(.venv)`，请手动执行 `.venv\Scripts\activate`。
 
 ---
 
@@ -159,28 +159,32 @@ execute hw -d date\20260929-c
 
 ## 四、注意事项 Notes
 
-### 🔧 将 VSCode 默认终端设置为 CMD (重要)
+### 🐍 首次运行准备 (极为重要)
 
-为了确保脚本正常运行，避免 PowerShell 环境变量继承问题，请在 VSCode 中按以下步骤操作：
+由于虚拟环境 `.venv/` 和 API 密钥文件不会被 Git 追踪，你在拉取代码后（或者在新的机器上），必须先打开终端执行以下两条命令，才能跑通 Python 相关代码：
 
-1. 打开 VSCode。
-2. 按下快捷键 `Ctrl + Shift + P` 打开命令面板。
-3. 在搜索框中输入 `Terminal: Select Default Profile` 并回车。
-4. 在弹出的列表中选择 `Command Prompt`。
+```bash
+# 1. 初始化并创建虚拟环境（只需执行一次）
+venv.bat init
+
+# 2. 一键安装 requirements.txt 中的所有依赖
+venv.bat req load
+```
+*(注：日常运行代码直接使用 `execute <name>` 即可，脚本会自动去 `.venv` 里找 Python，无需手动激活。)*
 
 ### ⚠️ 基础构筑工具必须在 dev 分支上修改
 
 **`newb.bat`、`close.bat`、`execute.bat`、`venv.bat`、`.gitignore`、`.vscode/`、`README.md` 等属于"基础构筑"，必须在 `dev` 分支上修改并提交。**
 
 原因：
-- 这些是所有分支共用的工具，不属于任何一天的作业
-- 如果在临时分支上修改，`close` 执行 `git checkout dev` 时，**磁盘上的脚本会被 git 换成 dev 版本**
-- Windows cmd 执行 bat 时，如果文件被中途修改，会导致执行混乱甚至中断
+- 这些是所有分支共用的工具，不属于任何一天的作业。
+- 如果在临时分支上修改，`close` 执行 `git checkout dev` 时，**磁盘上的脚本会被 git 换成 dev 版本**。
+- Windows cmd 执行 bat 时，如果文件被中途修改，会导致执行混乱甚至中断。
 
 正确做法：
-```
+```bash
 git checkout dev
-（修改脚本）
+#（修改脚本）
 git add . && git commit -m "chore: ..."
 git push origin dev
 ```
@@ -197,27 +201,17 @@ git push origin dev
 1. 关掉梯子（SSL 证书错误大多是梯子中间人导致）
 2. 热点也超时的话可以用 `ipconfig /flushdns`
 
-### VSCode 自动激活 venv 的关闭方法
+### 💡 VSCode 自动激活 venv 的补充说明
 
-VSCode 打开终端时会自动检测 `.venv/` 并执行 activate，导致每次开新终端都出现 `(.venv)` 前缀。
+工作区配置中已经默认关闭了 Python 终端自动激活。如果你的终端依然莫名出现了 `(.venv)` 前缀，可以检查你的全局用户配置：
 
-**关闭方法**（推荐全局关，一次搞定）：
-
-`Ctrl+Shift+P` → `Preferences: Open User Settings (JSON)` → 加入：
+`Ctrl+Shift+P` → `Preferences: Open User Settings (JSON)` → 确保包含：
 
 ```json
 "python.terminal.activateEnvironment": false
 ```
 
-保存后**关掉所有终端重新打开**，前缀消失。
-
-需要时直接跑 `venv python xxx.py`。
-
-### 编码约定
-
-- `.bat` 文件保存为 **GBK**（中文 Windows cmd 默认代码页 936）
-- `.md` `.c` `.cpp` `.py` `.json` 等保存为 **UTF-8**
-- VS Code 已通过 `.vscode/settings.json` 为 `.bat` 设置默认 GBK
+保存后**关掉所有终端重新打开**，前缀就会消失。
 
 ### PAT 使用
 
@@ -233,25 +227,25 @@ VSCode 打开终端时会自动检测 `.venv/` 并执行 activate，导致每次
 ```
 BPU26/
 ├── .venv/                    Python 虚拟环境（git 忽略）
-├── .vscode/                  VS Code 工作区配置
+├── .vscode/                  VS Code 工作区配置（终端、编码、换行符自动对齐）
 ├── ai_method/                自研 AI 工具封装库
 │   ├── ai.md                 接口说明
 │   ├── utils.py              核心工具集（读取配置、获取 Client、文件选择等）
 │   └── _secrets_/            存放密钥
 │       ├── loader.py         配置读取器
 │       └── secret.json       实际 API Key 配置文件（git 忽略）
-├── archive/                  旧资料归档 / 代码范例库
+├── archive/                  ✨ 旧资料归档 / 代码范例库
 │   ├── cpp/                  C++ 学习资料与范例
-│   │   ├── .docs/            曾经的课纲和随记
-│   │   └── sorting/          排序
+│   │   ├── docs/             课程大纲与随堂笔记（Markdown）
+│   │   └── sorting/          多文件排序算法范例（头文件与源文件）
 │   ├── java/                 Java 学习资料
-│   │   └── .docs/            速查表（HTML）
+│   │   └── docs/             Java 速查表（HTML）
 │   └── python/               Python 学习资料与范例
-│       ├── .docs/            速查表、学习笔记
-│       ├── basic_code/       基础片段
-│       ├── knn/              KNN
-│       ├── sorting/          排序
-│       └── turtle/           海龟作图
+│       ├── docs/             Checklist 与 Reference
+│       ├── basic_code/       基础代码范例
+│       ├── knn/              KNN 算法范例
+│       ├── sorting/          排序算法范例
+│       └── turtle/           海龟绘图范例
 ├── date/                     按日期归档的课堂记录
 │   ├── 20261020-c/           2026-10-20 C 语言课
 │   │   ├── note.md           课堂笔记
@@ -271,6 +265,7 @@ BPU26/
 ├── tools/                    自研底层工具源码（如 repo-tool）
 ├── release/                  正式版产物索引
 ├── .gitignore
+├── .gitattributes            Git 换行符强制配置（保证跨平台一致性）
 ├── close.bat
 ├── close.py
 ├── execute.bat
@@ -324,19 +319,19 @@ BPU26/
 
 1. 在 Win7 32 位虚拟机测试通过
 2. 编译最终 exe：
-   ```
+   ```bash
    set GOOS=windows
    set GOARCH=386
    go build -o repo-tool.exe .
    ```
 3. 把 dev 合并到 main：
-   ```
+   ```bash
    git checkout main
    git merge dev
    git push origin main
    ```
 4. 打 tag：
-   ```
+   ```bash
    git tag v1.0.0
    git push origin v1.0.0
    ```
