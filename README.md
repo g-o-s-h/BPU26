@@ -62,10 +62,14 @@ newb ?                 显示帮助
 ### execute — 编译 / 运行
 
 ```
-execute <name>              全仓库搜索 <name> 的源文件
-execute <name> -d <dir>     只在指定目录下搜索
-execute <name> -f           强制重新编译（跳过时间戳检查）
-execute ?                   显示帮助
+execute <name>                  全仓库搜索 <name> 的源文件
+execute <name> -d <dir>         只在指定目录下搜索
+execute <name> -f               强制重新编译（跳过时间戳检查）
+execute <name> -repeat <N>      重复运行 N 次
+execute <name> -test            自动测试（匹配代码同名的 .in 文件）
+execute <name> -test <前缀>     自动测试（匹配指定前缀的 .in 文件）
+execute <name> -test -all       自动测试（匹配所有 .in 文件）
+execute ?                       显示帮助
 ```
 
 行为：
@@ -76,6 +80,14 @@ execute ?                   显示帮助
 - `.py` 优先使用根目录 `.venv`，否则用系统 python
 - 编译 C/C++ 时加 `-fexec-charset=GBK`，让源文件中的中文在 cmd 正常显示
 - 运行 Python 时自动注入 `PYTHONPATH=%REPO_ROOT%`，方便在子目录中直接 `import ai_method`，用法详见 [ai_method 接口说明](ai_method/ai.md)
+- 如果使用了 `-repeat <N>`，程序会连续运行 N 次，退出码取最后一次运行的退出码。
+
+**关于 `-test` 自动测试：**
+为了免去刷题时手动复制测试数据的痛苦，脚本会自动寻找代码所在目录下的 `.in` 文件，并将其内容作为标准输入（`stdin`）喂给程序，运行完回显输出。
+- 没有任何参数（如 `execute calc -test`）：匹配 `calc.in`, `calc_1.in` 等。
+- 指定前缀（如 `execute calc -test caseA`）：匹配 `caseA.in`, `caseA_1.in` 等。
+- 全部运行（如 `execute calc -test -all`）：无视文件名，运行同目录下所有 `.in` 文件。
+*(建议将刷题的数据文件放在同级目录，脚本会自动抓取)*
 
 ### close — 关闭当前分支 / 推送 dev
 
@@ -149,11 +161,10 @@ close                      → 正常合并到 dev
 close -nomerge             → 直接删分支，未提交改动继承到 dev
 ```
 
-### 只在某个目录里找文件
+### 测试多组数据（结合 execute 的 -test）
 
-```
-execute hw -d date\20260929-c
-```
+1. 在代码同级目录准备 `calc_1.in`, `calc_2.in`
+2. 运行 `execute calc -test` 自动跑完所有数据并回显结果。
 
 ---
 
@@ -250,6 +261,7 @@ BPU26/
 │   ├── 20261020-c/           2026-10-20 C 语言课
 │   │   ├── note.md           课堂笔记
 │   │   ├── float_to_int.c    课堂代码
+│   │   ├── calc.in           测试用例
 │   │   ├── float_to_int.exe  编译产物（git 忽略）
 │   │   └── ...
 │   ├── 20261021-ai/          2026-10-21 AI 课
@@ -261,6 +273,7 @@ BPU26/
 │       ├── note.md           每日笔记
 │       ├── *.c / *.cpp       C / C++ 源代码
 │       ├── *.py              Python 脚本
+│       ├── *.in              测试数据文件
 │       └── ...
 ├── tools/                    自研底层工具源码（如 repo-tool）
 ├── release/                  正式版产物索引
@@ -308,6 +321,7 @@ BPU26/
 | `*.py` | Python 脚本 |
 | `note.md` | 课堂笔记（Markdown 格式） |
 | `note.src.md` | 笔记源文件（含 `@src` / `@exe` 占位符，见 TODO） |
+| `*.in` | 测试数据，配合 `execute -test` 使用 |
 | `Makefile` | 多文件项目时的构建脚本（可选） |
 | `*.exe` | 编译产物（git 忽略） |
 
