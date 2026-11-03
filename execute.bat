@@ -4,13 +4,6 @@ setlocal enabledelayedexpansion
 
 :: ============================================================
 ::  execute.bat — 搜索 + 编译 + 运行 (带时间戳缓存)
-::  用法:
-::    execute.bat <name>               全仓库搜索
-::    execute.bat <name> -d <dir>      只在指定目录下搜索
-::    execute.bat <name> -f            强制重新编译
-::    execute.bat <name> -repeat <N>   重复运行 N 次
-::    execute.bat <name> -test [前缀]  自动测试 .in 文件 (默认匹配同名, -all 匹配全部)
-::    execute.bat ?                    显示帮助
 :: ============================================================
 
 cd /d "%~dp0"
@@ -97,18 +90,18 @@ goto :search_start
 
 :show_help
 echo ============================================================
-echo   execute.bat — 搜索 + 编译 + 运行
+echo   execute — 搜索 + 编译 + 运行
 echo ============================================================
 echo.
 echo 用法:
-echo   execute.bat ^<name^>                 在整个仓库搜索 ^<name^> 的源文件
-echo   execute.bat ^<name^> -d ^<dir^>       只在指定目录下搜索
-echo   execute.bat ^<name^> -f               强制重新编译
-echo   execute.bat ^<name^> -repeat ^<N^>    重复运行 N 次
-echo   execute.bat ^<name^> -test            自动测试（匹配代码同名 .in）
-echo   execute.bat ^<name^> -test ^<前缀^>   自动测试（匹配指定前缀 .in）
-echo   execute.bat ^<name^> -test -all       自动测试（匹配所有 .in）
-echo   execute.bat ?                       显示本帮助
+echo   execute ^<name^>                 在整个仓库搜索 ^<name^> 的源文件
+echo   execute ^<name^> -d ^<dir^>       只在指定目录下搜索
+echo   execute ^<name^> -f               强制重新编译
+echo   execute ^<name^> -repeat ^<N^>    重复运行 N 次
+echo   execute ^<name^> -test            自动测试（匹配代码同名 .in）
+echo   execute ^<name^> -test ^<前缀^>   自动测试（匹配指定前缀 .in）
+echo   execute ^<name^> -test -all       自动测试（匹配所有 .in）
+echo   execute ?                       显示本帮助
 echo.
 echo 支持后缀: .c  .cpp  .cc  .cxx  .py
 echo.
@@ -121,8 +114,8 @@ pause
 exit /b 0
 
 :show_usage
-echo 用法: execute.bat ^<name^> [ -d ^<dir^> ] [ -f ] [ -repeat ^<N^> ] [ -test [前缀|-all] ]
-echo 帮助: execute.bat ?
+echo 用法: execute ^<name^> [ -d ^<dir^> ] [ -f ] [ -repeat ^<N^> ] [ -test [前缀|-all] ]
+echo 帮助: execute ?
 pause
 exit /b 1
 

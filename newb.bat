@@ -4,10 +4,6 @@ setlocal enabledelayedexpansion
 
 :: ============================================================
 ::  New Branch — newb.bat
-::  用法:
-::    newb.bat                   按日期+课型创建分支
-::    newb.bat -custom ^<name^>   创建自定义名字的分支
-::    newb.bat ?                 显示帮助
 :: ============================================================
 
 cd /d "%~dp0"
@@ -24,19 +20,19 @@ goto :show_help
 
 :show_help
 echo ============================================================
-echo   newb.bat — 创建临时分支 + 同名目录
+echo   newb — 创建临时分支 + 同名目录
 echo ============================================================
 echo.
 echo 用法:
-echo   newb.bat                   按当前日期+课型创建分支
-echo                              周二/四 08-10 点  ^-^> yyyyMMdd-c
-echo                              周三   08-10 点  ^-^> yyyyMMdd-ai
-echo                              其他时段        ^-^> yyyyMMdd-other
+echo   newb                   按当前日期+课型创建分支
+echo                          周二/四 08-10 点  -^> yyyyMMdd-c
+echo                          周三   08-10 点  -^> yyyyMMdd-ai
+echo                          其他时段        -^> yyyyMMdd-other
 echo.
-echo   newb.bat -custom ^<name^>   创建自定义名字的分支
-echo                              name 只允许字母、数字、横杠 [a-zA-Z0-9-]
+echo   newb -custom ^<name^>   创建自定义名字的分支
+echo                          name 只允许字母、数字、横杠 [a-zA-Z0-9-]
 echo.
-echo   newb.bat ?                 显示本帮助
+echo   newb ?                 显示本帮助
 echo.
 echo 说明:
 echo   - 创建前会先切到 dev 并同步 origin/dev
@@ -50,7 +46,7 @@ exit /b 0
 :mode_custom
 if "%~2"=="" (
     echo [错误] -custom 需要一个分支名参数
-    echo 用法: newb.bat -custom ^<name^>
+    echo 用法: newb -custom ^<name^>
     exit /b 1
 )
 set "CUSTOM_NAME=%~2"

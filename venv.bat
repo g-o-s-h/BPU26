@@ -23,7 +23,7 @@ if /i "%~1"=="req" goto :mode_req
 
 if not exist "%VENV_SCRIPTS%\python.exe" (
     echo [错误] 未找到 .venv
-    echo        请先执行: venv.bat init
+    echo        请先执行: venv init
     exit /b 1
 )
 
@@ -35,17 +35,17 @@ exit /b %ERRORLEVEL%
 
 :show_help
 echo ============================================================
-echo   venv.bat - 虚拟环境管理
+echo   venv - 虚拟环境管理
 echo ============================================================
 echo.
 echo 用法:
-echo   venv.bat init              创建（若不存在）并激活 .venv 环境
-echo   venv.bat quit              退出当前 shell 的 venv 激活
-echo   venv.bat req save          导出依赖到 requirements.txt
-echo   venv.bat req load          从 requirements.txt 安装依赖
-echo   venv.bat pip install xxx   在 venv 里跑 pip（无需激活）
-echo   venv.bat python xxx.py     在 venv 里跑 python（无需激活）
-echo   venv.bat ?                 显示本帮助
+echo   venv init              创建（若不存在）并激活 .venv 环境
+echo   venv quit              退出当前 shell 的 venv 激活
+echo   venv req save          导出依赖到 requirements.txt
+echo   venv req load          从 requirements.txt 安装依赖
+echo   venv pip install xxx   在 venv 里跑 pip（无需激活）
+echo   venv python xxx.py     在 venv 里跑 python（无需激活）
+echo   venv ?                 显示本帮助
 echo.
 echo 注意: 日常执行命令请直接使用命令代理模式 (venv pip / venv python)。
 echo       若需在当前窗口显示 (.venv) 前缀，请手动执行 .venv\Scripts\activate。
@@ -56,7 +56,7 @@ exit /b 0
 :mode_req
 if not exist "%VENV_SCRIPTS%\python.exe" (
     echo [错误] 未找到 .venv
-    echo        请先执行: venv.bat init
+    echo        请先执行: venv init
     exit /b 1
 )
 set "PATH=%VENV_SCRIPTS%;%PATH%"
@@ -86,7 +86,7 @@ if /i "%~2"=="load" (
 )
 
 echo [错误] req 需要 save 或 load 参数
-echo 用法: venv.bat req save ^| venv.bat req load
+echo 用法: venv req save ^| venv req load
 exit /b 1
 
 :: ============================================================

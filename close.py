@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import ctypes
+import ctypes.wintypes
 import getpass
 import glob
 import os
@@ -19,13 +20,16 @@ def set_console_codepage(cp: int):
     """Windows API 设置当前控制台输入/输出代码页，等价 chcp 命令"""
     if sys.platform != "win32":
         return
-    kernel32 = ctypes.windll.kernel32
-    kernel32.SetConsoleCP.argtypes = (ctypes.wintypes.UINT,)
-    kernel32.SetConsoleOutputCP.argtypes = (ctypes.wintypes.UINT,)
-    kernel32.SetConsoleCP.restype = ctypes.wintypes.BOOL
-    kernel32.SetConsoleOutputCP.restype = ctypes.wintypes.BOOL
-    kernel32.SetConsoleCP(cp)
-    kernel32.SetConsoleOutputCP(cp)
+    try:
+        kernel32 = ctypes.windll.kernel32
+        kernel32.SetConsoleCP.argtypes = (ctypes.wintypes.UINT,)
+        kernel32.SetConsoleOutputCP.argtypes = (ctypes.wintypes.UINT,)
+        kernel32.SetConsoleCP.restype = ctypes.wintypes.BOOL
+        kernel32.SetConsoleOutputCP.restype = ctypes.wintypes.BOOL
+        kernel32.SetConsoleCP(cp)
+        kernel32.SetConsoleOutputCP(cp)
+    except Exception:
+        pass
 
 
 REPO_ROOT = Path(__file__).resolve().parent
@@ -294,10 +298,10 @@ def show_help():
     line()
     print()
     print("用法:")
-    print("  close.bat              默认: 合并到 dev + 推送 + 删除分支")
-    print("  close.bat -nomerge     危险: 直接删除分支, 未提交改动继承到 dev")
-    print("  close.bat -pushdev     直接推送当前 dev 分支 (不合并)")
-    print("  close.bat ?            显示本帮助")
+    print("  close              默认: 合并到 dev + 推送 + 删除分支")
+    print("  close -nomerge     危险: 直接删除分支, 未提交改动继承到 dev")
+    print("  close -pushdev     直接推送当前 dev 分支 (不合并)")
+    print("  close ?            显示本帮助")
     print()
     print("PAT 输入:")
     print("  - 星号回显, 支持 Ctrl+V / 右键粘贴")
@@ -685,7 +689,7 @@ def main():
         
     finally:
         # askpass 回调进程不要执行设置代码页！会破坏git认证
-        if sys.platform == "win32" and not (len(sys.argv)>=2 and sys.argv[1] == '--askpass'):
+        if sys.platform == "win32" and not (len(sys.argv) >= 2 and sys.argv[1] == '--askpass'):
             set_console_codepage(936)
     return ret
 
