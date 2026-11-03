@@ -1,9 +1,7 @@
-# 自动检测文本文件，并在检出（下载/拉取）时转换为 CRLF
 * text=auto eol=crlf
 
-# 强制所有批处理文件、C/C++、Python、Markdown 都用 CRLF
-*.bat text eol=crlf
-*.cmd text eol=crlf
+*.bat -text
+
 *.c text eol=crlf
 *.cpp text eol=crlf
 *.h text eol=crlf
