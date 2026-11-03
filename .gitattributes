@@ -1,2 +1,17 @@
-# 默认所有文件在提交到 GitHub 和检出时都用 CRLF
+# 自动检测文本文件，并在检出（下载/拉取）时转换为 CRLF
 * text=auto eol=crlf
+
+# 强制所有批处理文件、C/C++、Python、Markdown 都用 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.c text eol=crlf
+*.cpp text eol=crlf
+*.h text eol=crlf
+*.py text eol=crlf
+*.md text eol=crlf
+*.json text eol=crlf
+
+# 二进制文件不转换
+*.png binary
+*.jpg binary
+*.exe binary
