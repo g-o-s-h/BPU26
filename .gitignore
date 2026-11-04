@@ -72,3 +72,15 @@ secret.json
 
 # close pat
 .close_local_pat
+
+# large products
+*.pdf
+*.zip
+*.mp4
+
+# i/o samples
+*.in
+*.out
+
+# specific files
+score.txt
