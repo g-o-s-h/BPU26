@@ -13,6 +13,10 @@ int main() {
     //     i++;
     // }
 
+    // while (i <= 10)
+    //     sum += i++;
+
+
     printf("一到十的和是 %d\n", sum);
     return 0;
 }
