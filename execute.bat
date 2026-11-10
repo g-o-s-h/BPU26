@@ -67,23 +67,25 @@ if /i "%~1"=="-repeat" (
 if /i "%~1"=="-test" (
     set "TEST_MODE=1"
     shift
-    rem 看下一个参数是不是 -all 或者 特定前缀
-    if /i "%~1"=="-all" (
-        set "TEST_ALL=1"
-        shift
-    ) else if not "%~1"=="" (
-        rem 检查下一个参数是不是以 - 开头（比如 -repeat），如果是，说明没指定测试前缀
-        echo %~1 | findstr /b /r "^\-" >nul
-        if errorlevel 1 (
-            set "TEST_PATTERN=%~1"
-            shift
-        )
-    )
-    goto :parse_args
+    goto :parse_test_target
 )
 
 echo [错误] 未知参数: %~1
 exit /b 1
+
+:parse_test_target
+if "%~1"=="" goto :parse_done
+if /i "%~1"=="-all" (
+    set "TEST_ALL=1"
+    shift
+    goto :parse_args
+)
+if not "%~1:~0,1%"=="-" (
+    set "TEST_PATTERN=%~1"
+    shift
+    goto :parse_args
+)
+goto :parse_args
 
 :parse_done
 goto :search_start
@@ -316,12 +318,41 @@ if !total! GTR 3 (
     echo ... 省略 !omit! 行数据 ...
 )
 echo ------------------------------------------------------------
+
+:: 生成对应的 .result 文件名 (把 .in 替换为 .result)
+set "RESULT_FILE=%~dpn1.result"
+
+echo [INFO] 运行中，输出将保存至: %~n1.result
 if /i "!EXT!"==".py" (
-    "!PYTHON!" "!TARGET!" < "%~1"
+    "!PYTHON!" "!TARGET!" < "%~1" > "!RESULT_FILE!" 2>&1
 ) else (
-    "!EXE!" < "%~1"
+    "!EXE!" < "%~1" > "!RESULT_FILE!" 2>&1
 )
-echo.
+
+:: 统计输出结果的行数
+set "out_total=0"
+for /f "usebackq delims=" %%a in ("!RESULT_FILE!") do (
+    set /a out_total+=1
+)
+
+if !out_total! GTR 20 (
+    echo [WARN] 输出行数过多 (!out_total! 行^)，以下仅预览前 15 行:
+    echo ------------------------------------------------------------
+    set "show_count=0"
+    for /f "usebackq delims=" %%a in ("!RESULT_FILE!") do (
+        set /a show_count+=1
+        if !show_count! LEQ 15 (
+            echo(%%a
+        )
+    )
+    echo ...
+    echo [INFO] 完整结果请查看: %~n1.result
+) else (
+    echo [OUTPUT] 运行结果:
+    echo ------------------------------------------------------------
+    type "!RESULT_FILE!"
+)
+
 echo ------------------------------------------------------------
 exit /b 0
 

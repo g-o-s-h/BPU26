@@ -1,5 +1,5 @@
 {
-    // 1. 默认终端强行指定为 CMD（避免 PowerShell 的各种玄学问题）
+    // 1. 默认终端强行指定为 CMD
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
 
     // 2. 全局默认编码为 UTF-8，但 bat 文件强制 GBK
@@ -8,12 +8,22 @@
         "files.encoding": "gbk"
     },
 
-    // 3. 全仓库统一 CRLF（防止换行符带来的任何意外）
+    // 3. 全仓库统一 CRLF
     "files.eol": "\r\n",
 
-    // 4. 关闭 Python 终端自动激活（根据你之前的偏好）
+    // 4. 关闭 Python 终端自动激活
     "python.terminal.activateEnvironment": false,
     
     // 5. 指定 Python 解释器路径
-    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+
+    // 6. 把测试数据后缀伪装成日志文件，并强制用 GBK 打开
+    "files.associations": {
+        "*.in": "log",
+        "*.out": "log",
+        "*.result": "log"
+    },
+    "[log]": {
+        "files.encoding": "gbk"
+    }
 }

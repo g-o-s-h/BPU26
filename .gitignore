@@ -81,6 +81,7 @@ secret.json
 # i/o samples
 *.in
 *.out
+*.result
 
 # specific files
 score.txt
