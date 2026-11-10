@@ -305,7 +305,7 @@ exit /b !RC!
 echo.
 echo [TEST] 运行测试用例: %~nx1
 echo ------------------------------------------------------------
-echo [DATA] 测试输入:
+echo [INPUT] 测试输入:
 set "total=0"
 for /f "usebackq delims=" %%a in ("%~1") do (
     set /a total+=1
@@ -351,6 +351,7 @@ if !out_total! GTR 20 (
     echo [OUTPUT] 运行结果:
     echo ------------------------------------------------------------
     type "!RESULT_FILE!"
+    echo.
 )
 
 echo ------------------------------------------------------------
