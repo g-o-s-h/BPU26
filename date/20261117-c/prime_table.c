@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+int n;
+int prime[100005];
+
 void print_format(int num) {
     static int allign = 1;
     printf("%5d%c", 
@@ -11,7 +14,6 @@ void print_format(int num) {
 }
 
 int main() {
-    int n;
     printf("输入一个整数：");
     scanf("%d", &n);
     if (n < 2) {
@@ -19,7 +21,7 @@ int main() {
         return 1;
     }
 
-    int prime[n], top = 1;
+    int top = 1;
     print_format(prime[0] = 2);
 
     for (int i = 3; i <= n; i += 2) {
