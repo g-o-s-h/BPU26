@@ -15,4 +15,4 @@ for i in range(1, DARTS):
 
 pi = 4 * (hits / DARTS)
 
-print(f"pi 的值： {pi}\n运行时间：{perf_counter()}")
+print(f"pi 的值：{pi}\n运行时间：{perf_counter()}")
